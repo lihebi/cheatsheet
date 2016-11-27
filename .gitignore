@@ -1,0 +1,11 @@
+*.ps
+*.pdf
+*.aux
+*.idx
+*.ilg
+*.ind
+*.log
+*.out
+*.dvi
+*.toc
+examples

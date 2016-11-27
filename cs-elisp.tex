@@ -1,0 +1,307 @@
+\section{Elisp}
+\subsection{Concepts}
+
+\subsubsection{Quote}
+\begin{tabular}{@{}ll@{}}
+  \lstinline!'! & read without evaluate \\
+  \lstinline!`! & same as \lstinline!'! except it can partially evaluate.\\
+  \lstinline!,! & evaluate inside back quote\\
+  \lstinline!,@! & evaluate and splice the resulting list inside back quote.
+\end{tabular}
+
+\subsubsection{Symbol}
+Three special forms define symbols: \texttt{defvar}, \texttt{defun}, and \texttt{defmacro}.
+A symbol can not be both a function and macro, but it can be a variable and a function at the same time.
+
+A symbol can have a property list.
+
+\begin{tabular}{@{}ll@{}}
+  \texttt{get <sym> <prop>} & get\\
+  \texttt{put <sym> <prop> <val>} & set\\
+  \texttt{symbol-plist <sym>} & return the p-list\\
+  \texttt{setplist <sym> <plist>} & set p-list
+\end{tabular}
+
+
+\subsection{IO}
+\begin{tabular}{@{}ll@{}}
+  \texttt{print} & in quote, with newline before and after\\
+  \texttt{prin1} & in quote\\
+  \texttt{princ} & no addition\\
+  \texttt{message} & display at bottom, goes into \lstinline!*Messages*! buffer
+\end{tabular}
+
+
+\subsection{Regular Expression}
+\subsubsection{Syntax}
+\paragraph{Basics}
+\begin{tabular}{@{}ll@{}}
+  \texttt{.} & everything except newline\\
+  \texttt{*,+,?} & \\
+  \texttt{*?,+?,??} & non-greedy, match the smallest part\\
+  \texttt{} &\\
+  \texttt{\lstinline![],[^],^,\$!} &
+\end{tabular}
+
+
+\paragraph{Character classes}
+Use the double \texttt{[[]]} form. E.g. \texttt{[[:ascii:]]}, and also the negative writes \lstinline![^[:ascii:]]!.
+
+\begin{tabular}{@{}ll@{}}
+  \texttt{ascii} & 0-127\\
+  \texttt{alnum} & letter or digit\\
+  \texttt{alpha} & letter\\
+  \texttt{blank} & space and tab\\
+  \texttt{cntrl} & ASCII control char\\
+  \texttt{digit} & 0-9\\
+  \texttt{lower} & lower-case\\
+  \texttt{upper} & upper-case\\
+  \texttt{punct} & punctuation\\
+  \texttt{space} & whitespace\\
+  \texttt{word} & same as \lstinline!\w!
+\end{tabular}
+
+\paragraph{Backslash}
+Backslash is also used in elisp read syntax. So when you want one \texttt{\\} in the string, you need to write double.
+
+\begin{tabular}{@{}ll@{}}
+  \lstinline!\w, \W, \b, \B! &\\
+  \lstinline!\{\}! & \lstinline!{}! counter part\\
+  \lstinline!\1! & either one of two expressions. Can be used in capturing group\\
+  \lstinline!\(\)! & capturing group\\
+  \lstinline!\(?:\)! & non-capturing group\\
+  \lstinline!\(?NUM:\)! & numbered capturing group.. If conflict numbers, last one will win\\
+  \lstinline!\DIGIT! & back reference
+\end{tabular}
+
+\paragraph{Syntax code}
+\texttt{\\sCODE} can be used to refer to any character "whose syntax is CODE".
+\texttt{\\SCODE} is the negative form.
+See the "Syntax Class Table" chapter of elisp manual for details.
+
+\begin{tabular}{@{}ll@{}}
+  \lstinline!\s-! & whitespace\\
+  \lstinline!\s[space]! & whitespace\\
+  \lstinline!\sw! & \lstinline!\w!\\
+  \lstinline!\s.! & punctuation\\
+\end{tabular}
+
+\subsubsection{Search}
+\begin{description}
+\item[regexp-quote \NT{str}] \uline{a regexp} whose only exact match is str.
+\item[regexp-opt \NT{strs}] \uline{an \textit{efficient} regexp}
+  matching any of the strings.
+\item[re-search-forward \NT{reg}] 
+\item[re-search-backward \NT{reg}] 
+\item[string-match \NT{reg str}] \uline{index} of first match.
+  Set \uwave{\textit{Match Data}}
+\item[string-match-p \NT{reg str}] \uline{index} of first match.
+\item[match-string \NT{idx}] \uline{component} of \textit{Match Data}, 0 for entire match
+\item[match-beginning \NT{idx}] \uline{beginning index} of the \textit{Match Data}
+\item[match-end \NT{idx}]
+\item[replace-regexp-in-string \NT{regexp rep string}] \uline{a
+    modified copy} with all matches replaced with \texttt{rep}.
+\end{description}
+
+\subsection{Type}
+\subsubsection{Equal}
+\begin{description}
+\item [eq \textnormal{\texttt{o1 o2}}] \texttt{t} if same Lisp object. Faster than \texttt{equal}
+\item [equal \textnormal{\texttt{o1 o2}}] \texttt{t} if similar structure and contents
+\item [=] \texttt{t} if all args are \texttt{equal}. Only for numbers
+\item [string=] compare two strings
+\end{description}
+
+\subsubsection{Number}
+\begin{description}
+\item [expt \NT{a b}] $a^b$
+\end{description}
+
+\subsubsection{String}
+\begin{description}
+%  construct
+\item [make-string \NT{ct char}] make string by duplicating characters
+\item [substring \NT{str start \&opt end}]
+\item [concat \NT{\&rest sequences}]
+\item [split-string \NT{str \&opt seps}] default seps: \verb!"[ \f\t\n\r\v]+"!
+% convert
+\item [number-to-string \NT{num}]
+\item [string-to-number \NT{str}]
+\item [char-to-string \NT{char}]
+\item [string-to-char \NT{str}] returns the first character in string
+% case
+\item [downcase \NT{string-or-char}]
+\item [upcase \NT{string-or-char}]
+\item [capitalize \NT{string-to-char}]
+\end{description}
+
+\subsubsection{cons cell}
+This is a pair of slots, each of them can hold anything.  A list is a
+list of cons cells, in which each cdr is the "address" next list.
+\textit{Destructive} operations mean the cdr of the cons cells are
+modified.
+
+A \textit{dotted pair notation} is a more general syntax of a cons
+cell.  It is written as \texttt{(A . B)}.  It is more general because
+the cdr can also hold anything.  As an example, \texttt{(1 2)} is
+the same as \verb$(1 . (2 . nil))$.  If the CDR of a list’s
+last cons cell is some value other than ‘nil’, we call the structure a
+\textit{dotted list}, since its printed representation would use
+dotted pair notation.
+
+\begin{description}
+% construct
+\item [cons \NT{obj1 obj2}] create a \uline{cons cell} with args
+  as CAR and CDR. If obj1 is a list, this is called \textit{cons obj2 onto the list}.
+\item [list \NT{\&rest objs}] create a list
+\item [make-list \NT{length obj}] make a list of \texttt{length}, each
+  cell holding the \textit{same} object, using \texttt{eq}
+\item [append \NT{\&rest seqs}] last one is a list. Concatenate into
+  one list, all arguments except the last one are copied. Set
+  \texttt{nil} to the last to force copy everything.
+\item [reverse \NT{list}] reverse the list by copying
+\item [number-sequence \NT{from to}] the list of \texttt{[from,to]}, inclusive
+
+% access
+\item [car,cdr]
+\item [car-safe,cdr-safe]
+\item [caar] car car, 11
+\item [cadr,cdar,cddr]
+\item [nth \NT{n list}] get the \uline{nth element}, starting from 0
+\item [nthcdr \NT{n list}] execute \uline{cdr n times}
+\item [last \NT{list}]
+\item [pop] return the \uline{cdr}, and \uwave{remove it from the list}
+\item [length]
+
+% modify  
+\item [push \NT{el list}] modify \uwave{\texttt{list}} by cons \texttt{el} onto it.
+\item [add-to-list \NT{list el}] cons \texttt{el} onto \uwave{\texttt{list}}
+  if it is not there.
+\item [setcar \NT{cons obj}]
+\item [setcdr \NT{cons obj}]
+\item [sort \NT{list pred}] destructive due to rearrange the cdrs
+\end{description}
+
+\subsubsection{set}
+We use list as set, by ignoring the order ...
+\texttt{append} to combine two set, then \texttt{delete-dups} to remove duplication ...
+
+\begin{description}
+\item [memq \NT{obj list}] whether obj is a member of list, using \texttt{eq}
+\item [delq \NT{obj list}] destructively remove all elements \texttt{eq} to obj.
+\item [rmq obj \NT{list}] return a copy of list with all obj removed
+\item [member] \texttt{equal} counter-part
+\item [member-ignore-case] for string
+\item [delete] \texttt{equal} counter-part
+\item [remove] \texttt{equal} counter-part
+\item [delete-dups] use \texttt{equal}
+\end{description}
+
+\subsubsection{association list}
+This is a special list, each element is a key-value pair.
+
+\begin{lstlisting}
+(setq alist-of-colors
+  '((rose . red) (lily . white) (buttercup . yellow)))
+\end{lstlisting}
+
+
+\begin{description}
+\item [assoc \NT{key list}]
+  \uline{first element} of \textit{list} whose car \texttt{equal} \textit{key}.
+\item [rassoc \NT{val list}]
+  \uline{first element} of \textit{list} whose cdr \texttt{equal} \textit{val}
+\item [assq \NT{KEY list}]
+  \uline{first element} of \textit{list} whose car \texttt{eq} \textit{key}.
+\item [rassq]
+  \uline{first element} of \textit{list} whose cdr \texttt{eq} \textit{val}
+\item [assoc-string \NT{key list \&opt case-fold}] This is \texttt{assoc} for
+  string. if \texttt{case-fold} is non-nil, case is ignore-d.
+
+\item [copy-alist \NT{list}] two-level deep copy
+\item [assq-delete-all \NT{key list}] delete all elements whose car \texttt{eq} \textit{key}
+\item [rassq-delete-all \NT{val list}] delete all elements whose cdr \texttt{eq} \textit{key}
+\end{description}
+
+\subsubsection{property list}
+It is a flat list. The odd elements are property name, and the even elements are values.
+
+\begin{lstlisting}[language=lisp]
+(pine cones numbers (1 2 3) color "blue")
+\end{lstlisting}
+The property names \textit{must} be unique.
+The order of the "pairs" does not matter.
+\begin{description}
+\item [plist-get \NT{plst prop}] get the \uline{value}
+\item [plist-put \NT{plst prop val}] set the \uwave{value of \texttt{plst}}
+\item [lax-plist-get] use \texttt{equal}
+\item [lax-plist-put] use \texttt{equal}
+\item [plist-member \NT{plst prop}] return \uline{the tail of
+    \texttt{plst} whose car is \texttt{prop} (non-nil)} if \texttt{prop} is in
+  \texttt{plst}. This is useful because it can distinguish the missing
+  property and the property with value \texttt{nil}
+\end{description}
+
+
+\subsubsection{sequence}
+
+\begin{tikzpicture}
+  % \node (A) [rectangle,draw,rounded corners] at (0,1) {hello};
+  % \node (B) at (0,2) {yes};
+  % \draw (0,1) -- (2,4);
+  % \node [rectangle,draw,label=sequence] {
+  %   % \node [label=list] {
+  %   %   % \node [label="Array"] {};
+  %   % };
+  % };
+
+  \node (vector) at (0,0) [draw] {vector};
+  \node (string) at (0,1) [draw] {string};
+  \node (char) at (2,0) [draw] {Char table};
+  \node (bool) at (2,1) [draw] {Bool vector};
+  \node (array) [draw,fit={(vector) (string) (char) (bool)},"center:Array"] {};
+  \node (list) at (-2,0) [draw] {List};
+  \node (sequence) [draw,fit={(list) (array)},label={[shift={(-2,0)}]center:Sequence}] {};
+\end{tikzpicture}
+
+\begin{description}
+\item [length \NT{seq}]
+\item [elt \NT{seq idx}] returns the element of \textit{seq} at \textit{index}
+\item [copy-sequence \NT{seq}] the sequence is new, but the elements are not.
+\end{description}
+
+\subsubsection{array}
+It is fixed length sequence.
+\begin{description}
+% constructing
+\item [make-vector \NT{length object}] create vector
+\item [vector \NT{\&rest objects}] create vector
+% accessing
+\item [aref \NT{array index}] getter
+\item [aset \NT{array index object}] setter
+\end{description}
+
+\subsubsection{hash table}
+\begin{description}
+% construct
+\item [make-hash-table]
+
+% access
+\item [gethash \NT{key table}]
+\item [puthash \NT{key value table}]
+\item [remhash \NT{key table}] remove
+\item [clrhash \NT{table}] remove all
+\item [maphash \NT{function table}] call function once for each of the
+  element in table. The function should accept two arguments: key and
+  value
+% other
+\item [hash-table-count \NT{table}] return number of entries
+\end{description}
+
+\subsection{Function}
+
+\subsection{Control Structure}
+
+%%% Local Variables:
+%%% TeX-master: "cheatsheet"
+%%% End:

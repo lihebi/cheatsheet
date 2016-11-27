@@ -94,7 +94,7 @@
 % my packages
 \usepackage{listings}
 \usepackage{textcomp}
-\usepackage{enumitem}
+\usepackage[inline]{enumitem}
 \usepackage{courier}
 \usepackage{indentfirst} % indent first paragraph after section
 \usepackage{ulem}
@@ -175,7 +175,15 @@
   ,font=\ttfamily
 }
 \setlist[itemize]{nosep}
+\setlist[enumerate]{nosep}
 
+\newlist{inlineitemize}{itemize*}{1}
+\newlist{inlineenumerate}{enumerate*}{1}
+\newlist{inlinedescription}{description*}{1}
+
+% I have to have the setlist* to make it work
+% and this only works for enumerate
+\setlist*[inlineenumerate,1]{label=(\roman*)}
 
 \newcommand{\NT}[1]{\textnormal{\texttt{#1}}}
 
@@ -183,12 +191,6 @@
 % \input{clqr.macros}
 %
 \begin{document}
-
-
-
-
-
-
 
 \newlength{\titlepagewidth}
 \setlength{\titlepagewidth}{8cm}
@@ -256,7 +258,8 @@
 % \global\setlength{\itemsep}{-5pt}
 
 \input{cs-elisp}
-
+\clearpage
+\input{cs-latex}
 
 % \input{clqr-typographic-conventions}
 % \clearpage

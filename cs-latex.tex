@@ -1,0 +1,116 @@
+\section{\LaTeX}
+
+\subsection{Installation}
+To see what is your tex home: \texttt{kpsewhich -var-value=TEXMFHOME}
+It should be something like "~/texmf".  Putting class and style file
+into correct path inside that folder will enable global usage of the
+class.  check whether it works or not: \texttt{kpsewhich
+  sig-alternate-05-2015.cls} Typically you don't need to update
+database, but if you want, Command to update the =ls-R= database:
+\texttt{texhash} or \texttt{mktexlsr}
+
+\begin{tabular}{@{}ll|ll@{}}
+  \verb$\alpha$ & $\alpha$ & \verb$\theta$ & $\theta$ \\
+  \verb$\phi$ & $\phi$ & \verb$\varphi$ & $\varphi$ \\
+  \verb$\xi$ & $\xi$ & \verb$\mu$& $\mu$\\
+  \verb$\pi$ & $\pi$ & \verb$\rho$ & $\rho$\\
+  \verb$\sigma$ & $\sigma$ & \verb$\epsilon$ & $\epsilon$\\
+  \verb$\partial$ & $\partial$\\
+  \hline
+  \verb$\quad$ & $\alpha\quad\beta$ & \verb$\qquad$ & $\alpha\qquad\beta$\\
+  \hline
+  \verb$\cup$ & $\cup$ & \verb$\bigcup$ & $\bigcup$ \\
+  \verb$\cap$ & $\cap$ & \verb$\vee$ & $\vee$ \\
+  \verb$\wedge$ & $\wedge$ & \verb$\in$ & $\in$ \\
+  \verb$\notin$ & $\notin$ & \verb$\neg$ & $\neg$ \\
+  \verb$\subset$ & $\subset$ & \verb$\subseteq$ & $\subseteq$\\
+  \verb$\supset$ & $\supset$ & \verb$\supseteq$ & $\supseteq$ \\
+  \verb$\le$ & $\le$ & \verb$\ge$ & $\ge$\\
+  \verb$\neq$ & $\neq$ & \verb$\forall$ & $\forall$\\
+  \verb$\exists$ & $\exists$\\
+  \hline
+  \verb$\leftarrow$ & $\leftarrow$ & \verb$\rightarrow$ & $\rightarrow$\\
+  \verb$\Rightarrow$ & $\Rightarrow$ & \verb$\Leftarrow$ & $\Leftarrow$\\
+  \verb$\Leftrightarrow$ & $\Leftrightarrow$ & \verb$\longrightarrow$ & $\longrightarrow$\\
+  \hline
+  \verb$\hat{a}$ & $\hat{a}$ & \verb$\vec{x}$ & $\vec{x}$\\
+  \hline
+  \verb$\infty$ & $\infty$ & \verb$\propto$ & $\propto$\\
+  \verb$\lfloor$ & $\lfloor$ & \verb$\rfloor$ & $\rfloor$\\
+  \verb$\lceil$ & $\lceil$ & \verb$\rceil$ & $\rceil$\\
+  \verb$\sum$ & $\sum$ & \verb$\int$ & $\int$\\
+  \verb$\ldots$ & $ \ldots$ & \verb$\frac{a}{b}$ & $\frac{a}{b}$\\
+  \verb$\sqrt{n}$ & $\sqrt{n}$ & \verb$\overline{abc}$ & $\overline{abc}$\\
+  \verb$\prod$ & $\prod$ & &  \\
+  \hline
+  \verb$\checkmark$ & $\checkmark$ & \verb$\times$ & $\times$\\
+  \hline
+  \verb$\tiny$ & \tiny tiny & \verb$\scriptsize$ & \scriptsize scriptsize\\
+  \verb$\footnotesize$ & \footnotesize footnotesize& \verb$\small$ & \small small\\
+  \verb$\normalsize$ & \normalsize normalsize& \verb$\large$ & \large large\\
+  \verb$\Large$ & \Large Large& \verb$\LARGE$ & \LARGE LARGE\\
+  \verb$\huge$ & \huge huge& \verb$\Huge$ & \Huge Huge
+\end{tabular}
+
+
+
+\subsubsection{General Syntax}
+
+\begin{tabular}{@{}l|l|l@{}}
+  \begin{lstlisting}
+    \begin{enumerate}
+    \item xxx
+    \end{enumerate}
+  \end{lstlisting} &
+\begin{lstlisting}
+  \begin{itemize}
+  \item like this,
+  \end{itemize}
+\end{lstlisting}&
+\begin{lstlisting}
+  \begin{description}
+  \item[Word] Definition
+  \end{description}
+\end{lstlisting}\\
+\end{tabular}
+
+\begin{tabular}{@{}l|l@{}}
+\begin{lstlisting}
+  \begin{table}
+    \centering
+    \begin{tabular}{l|r}
+      Item & Quantity \\\hline
+      Widgets & 42 \\
+      Gadgets & 13
+    \end{tabular}
+    \caption{\label{tab:widgets}
+      An example table.}
+  \end{table}
+\end{lstlisting} &
+\begin{lstlisting}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.3\textwidth]{frog.jpg}
+    \caption{\label{fig:frog}caption.}
+  \end{figure}
+\end{lstlisting}
+\end{tabular}
+
+\begin{tabular}{@{}l|l@{}}
+  \begin{lstlisting}
+    \label{xxx}
+    \ref{xxx}
+    \label{xx:yy}
+    \ref{xx:yy}
+  \end{lstlisting}&
+\begin{lstlisting}
+\todo{comment in the margin!}
+\todo[inline, color=green!40]{inline comment.}
+\end{lstlisting}
+\end{tabular}
+
+
+
+%%% Local Variables:
+%%% TeX-master: "cheatsheet"
+%%% End:

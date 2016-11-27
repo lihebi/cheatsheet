@@ -300,7 +300,183 @@ It is fixed length sequence.
 
 \subsection{Function}
 
+\begin{description}
+  % define
+\item [defun \NT{name arglst \&opt docstr decl \&rest body}]
+\item [defmacro \NT{name args body}] Macro does not evaluate its
+  arguments. It put the arguments /as is/ and put them into the macro
+  body to form an expression.  The expression is then evaluated for
+  result.
+
+  % Anonymous functions
+\item [lambda \NT{args body}]
+\item [function \NT{fun-obj}] returns the function without evaluating
+  it. It is the "quote" for function
+\item [\#'] this is the read syntax for the above \texttt{function}
+  special form. You see, it is indeed the \textit{quote} for the
+  function.
+
+  % Calling
+\item [funcall \NT{fun \&rest args}] compute which function to execute
+  at runtime
+\item [apply \NT{fun \&rest args}] compute the arguments at
+  runtime. Same as =funcall=, but the /last/ of arguments is a list,
+  and will be expanded into many arguments instead of a list.
+
+  % Mapping family
+\item [mapcar \NT{fun seq}] execute function on each element of
+  sequence, and return the list of results.
+\item [mapc \NT{fun seq}] same as =mapcar= except it returns the
+  =sequence=, with the intention to collect side effect.
+\item [mapconcat \NT{fun seq sep}] execute function on
+  elements of sequence. The results must be strings, and will be
+  concatenated and returned.
+\end{description}
+
+
+
 \subsection{Control Structure}
+
+\begin{description}
+% Sequential
+\item [progn \NT{forms...}] return the result of final form
+\item [prog1 \NT{form1 forms...}] return the result of form1
+\item [prog2 \NT{form1 form2 forms...}] return the result of form2
+% Conditional
+\item [not]
+\item [and]
+\item [or]
+\item [if \NT{condition then-form else-forms...}]
+\item [when \NT{condition then-forms...}]
+\item [unless \NT{condition forms...}]
+\item [cond \NT{clause...}] the clause must be a list:
+  \texttt{(condition body-forms...)}.  It is not exactly the "case"
+  statement, because the condition is evaluted to true or false.  Any
+  remaining forms are \textit{ignored}.
+\item [pcase \NT{exp branch1 branch2 branch3...}] this is more like
+  the "case" statement. The EXP is first evaluted and compare with the
+  car of each branches.  The branch must be of the form
+  \texttt{(UPATTERN BODY-FORMS...)}
+\item [while \NT{condition forms...}]
+\item [dolist \NT{(var list [result]) body...}] execute body for each
+  element of list, with the bound of var to the current element and
+  result for return.
+\item [dotimes \NT{(var count [result]) body...}] execute body for
+  each index of \texttt{[0,count)}, with var bound to the index, and
+  result bound for return.
+\end{description}
+
+\subsubsection{CL Loop facility}
+The package cl-lib.el ports many common lisp facilities into elisp,
+most importantly, the loop facility.  So this section, at least for
+now, focus on \texttt{cl-loop}.
+
+\begin{description}
+\item [cl-loop \NT{clauses...}] general loop form.
+\item [for \NT{var} from \NT{from} to \NT{to} by \NT{step}]
+  \textit{from} defaults to 0. \textit{step} must be positive and default to 1;
+  inclusive \texttt{[from,to]};
+  \texttt{from} can be \texttt{upfrom} and \texttt{downfrom}. I think it is wired to use this;
+  \texttt{to} can be \texttt{upto} and \texttt{downto}. This makes more sense;
+  \texttt{above} and \texttt{below} can be used, but /exclusive/. e.g. \texttt{for var below 10}
+\item [for VAR in LIST by FUNCTION] =FUNCTION= is used to traverse the list, defaults to =cdr=
+\item [for VAR on LIST by FUNCTION] =VAR= is bound to the cons cell of the list instead of the element.
+\item [for VAR across ARRAY] iterates all elements of array
+\item [for VAR ]PR1 then EXPR2= :: this is the most general form.  The
+  =VAR= is bound to =EXPR1= initially, and will be set by evaluating
+  =EXPR2= in successive iterations.  =EXPR2= can refer the old =VAR=
+
+% iteration clauses
+\item [repeat \NT{integer}] repeat the loop how many times
+\item [while \NT{condition}] stops the loop when the condition becomes nil
+\item [until \NT{condition}]
+\item [always \NT{condition}] like while except it returns =nil=, and =finally= clauses are not executed.
+\item [never \NT{condition}] counter part for =always=
+
+% accumulation clauses
+\item [collect \NT{form}] collect into a list and return the list in the end
+\item [append \NT{form}] collect the lists into a list by appending, and return it in the end
+\item [concat \NT{form}] for string only
+\item [count \NT{form}] count how many times form evaluates to non-nil.
+\item [sum \NT{form}] sum all the values
+\item [maximize \NT{form}] get the max. If the form is never executed, result is /undefined/
+\item [minimize \NT{form}]
+
+% Other clauses
+\item [with var = value] set the value one-time at the beginning of
+  the loop.  Often used as return variable.  *The spaces around ~=~ is
+  essential!*.
+\item [if condition clause [else clause]]
+\item [when condition clause] same as if
+\item [unless condition clause] similar
+\item [initially [do] forms...] execute before the loop begins, but
+  after the =for= and =with= variable bindings. =do= is optional.
+\item [finally [do] forms...] execute after the loop finishes
+\item [finally return form] finally return it ...
+\item [do forms...] execute as an implicit =progn= in the body
+\item [return form] this is often used in =if= or =unless=, because
+put it in top level will cause the loop always execute only once.
+\end{description}
+
+
+
+\subsection{Debugging}
+\subsubsection{lisp debugger}
+The simplest debugger is called =lisp debugger=.
+You can turn on the =debug-or-error= flag,
+but I found inserting the =(debug)= command useful.
+Simply insert =(debug)= where you want program to suspend, and run it.
+You will enter the debugger at that point.
+In the debugger buffer, the following commands are available:
+\begin{description}
+\item [c] continue run program
+\item [d] step
+\item [e] evaluate an prompt expression
+\item [R] like =e=, but also save the result in =*Debugger-record*=
+\item [q] quit
+\item [v] toggle display of local variables ???
+\end{description}
+\subsubsection{Edebug}
+For this to work, first you need to instrument the code.
+You can instrument the defun by =C-u C-M-x=.
+Actually this is adding a prefix before =eval-defun=,
+which instrument, and then evaluate the defun.
+
+After instrumentation, running the defun will cause the program to stop at the first /stop point/ of the function.
+The /stop points/ are
+\begin{itemize}
+\item before and after each subexpression that is a list
+\item after each variable reference
+\end{itemize}
+
+\begin{description}
+\item [b] set a breakpoint. You can also set the /source breakpoints/, by adding =(edebug)=.
+\item [u] unset a breakpoint
+\item [x CONDITION] set a conditional breakpoint
+\item [B] move point to the next breakpoint
+\item [w] move point back to the current stop point
+\item [<SPC>] run to next stop point
+\item [g] execute until next breakpoint
+\item [q] exit
+\item [S] stop and wait for Edebug commands
+\item [n] evaluate a sexp and stop at stop point
+\item [t] /trace/, pause one second at each stop point ...
+\item [T] rapid trace. Update the display at each stop point but don't actually pause ...
+\item [c] pause one second at each breakpoint
+\item [C] rapid continue.
+\item [G] run and ignore breakpoints (but you can stop it by =S=)
+
+\item [h] proceed to the stop point near the point ...
+\item [f] run one expression
+\item [o] step out the containing expression
+\item [i] step in
+\item [e EXP] evaluate a prompt expression
+\item [C-x C-e] evaluate an expression at point
+\item [?] show help
+\item [r] redisplay the most recent sexp result
+\item [d] display the backtrace
+\end{description}
+
 
 %%% Local Variables:
 %%% TeX-master: "cheatsheet"

@@ -1,0 +1,183 @@
+\section{Prolog}
+
+online resources
+\begin{itemize}
+\item learn prolog now \footnote{http://lpn.swi-prolog.org/lpnpage.php?pageid=top}
+\item swipl library \footnote{http://www.swi-prolog.org/pldoc/man?section=lists}
+\end{itemize}
+
+\subsection{Running program}
+
+Install swi-prolog, and emacs should be able to support it.  In a
+prolog file, select a region, and \texttt{C-c C-c r} (execute region).
+Using this for facts and rules, but evalute query direct in the repl.
+
+\subsection{From the slides}
+
+A Horn Clause: $c \quad h_1 \wedge h_2 \wedge \ldots \wedge h_n$.
+$c$ is the consequent, the conjunction of $h_i$ is the antecedent.
+It means if all $h_i$ are true, $c$ is true.
+This is written in prolog as:
+
+\begin{lstlisting}
+c :- h1,h2,...,hn
+\end{lstlisting}
+
+Logic program is actually a collection of Horn Clauses.
+A logic problem has three components:
+\begin{description}
+\item [fact] Horn Clause with no Antecedent. isamother(mary)
+\item [rule] Horn Clause with Antecendent
+\item [query] Horn Clause with no Consequent
+\end{description}
+
+Example:
+
+\begin{lstlisting}[language=prolog]
+  % facts
+  isamother(mary).
+  childof(tom, mary).
+  % rules
+  loves(mary, tom) :- isamother(mary), childof(tom, mary).
+  % quries
+  ?- loves(mary, tom).
+\end{lstlisting}
+
+Prolog can have variables. It is often used in rules and quries.
+\begin{lstlisting}
+  loves(X, Y) :- isamother(X), childof(Y, X).
+  ?- loves(mary, X).
+\end{lstlisting}
+
+Syntax of prolog:
+\begin{lstlisting}
+Clause ->  Predicate.
+         | Predicate :- PredicateSeq.
+PredicateSeq ->  Predicate
+               | Predicate, PredicateSeq
+Predicate -> PredName(TermSeq)
+TermSeq   ->  Term
+            | Term, TermSeq
+Term      ->  FunctorName(TermSeq) | Constant | Variable
+\end{lstlisting}
+
+\subsection{Executing}
+\subsubsection{Unification}
+Given two atomic formula (predicates), they can be unified if and only
+if they can be made syntactically identical by replacing the variables
+in them by some terms.
+
+Unify childof(jane, X) and childof(jane, mary).
+
+\textit{MGU} results from a substitution that bounds free variables as little
+as possible
+
+\subsubsection{Substitution}
+Substitution maps variables to terms.  Instantiation is the
+application of substitution to all variables in a prolog formula,
+term.
+
+Unify $childof(jane, X)$ and $childof(Y, mary)$ by $[X \rightarrow mary, Y \rightarrow jane]$
+
+\subsubsection{Unification and Computing with Logic}
+
+Given a query
+\begin{itemize}
+\item Search the facts and rules to find whether the query unifies
+  with any consequent
+\item If the search fails, return false (query result)
+\item If the search is successful, then
+  \begin{itemize}
+  \item if the unification occurs with the consequent of a fact,
+    return the substitution of the variables (if any)
+  \item if the unification occurs with the consequent of a fact,
+    return the substitution of the variables (if any)
+  \end{itemize}
+\end{itemize}
+
+An example:
+\begin{lstlisting}
+isamother(mary).
+childof(tom, mary).
+loves(X, Y) :- isamother(X), childof(Y, X).
+?- loves(mary, tom).
+\end{lstlisting}
+
+\subsubsection{Backtracking}
+
+\begin{itemize}
+\item Re-try to unify with some clause other than the fact, and proceed
+\item Re-try to unify with some clause other than the fact, and proceed
+\end{itemize}
+
+Example:
+\begin{lstlisting}
+isamother(mary).
+childof(jane, mary).
+childof(tom, mary).
+loves(X, Y) :- isamother(X), childof(Y, X).
+?- loves(mary, X)
+\end{lstlisting}
+
+An graph example:
+\begin{lstlisting}
+edge(a, b).
+edge(b, c).
+edge(c, a).
+reach(X, Y) :- edge(X, Y).
+reach(X, Y) :- edge(X, Z), reach(Z, Y).
+?- reach(a, c)
+\end{lstlisting}
+
+\subsection{Other Prolog Features}
+\subsubsection{List}
+
+\begin{description}
+\item [[a, b, c]] a list of 3 elements
+\item [[]] empty list
+\item [[a, [b, c], [[d, e]], []]] list can contain different type
+\item [[a|[b, c]]] head and tail
+\end{description}
+
+Example:
+\begin{lstlisting}
+  ?- [1, 2, 3] = [X|Xs].
+  % X=1
+  % Xs = [2, 3]
+  ?- [1, 2, 3] = [X|[Y|Rest]].
+  % X=1
+  % Y=2
+  % Rest = [3]
+\end{lstlisting}
+
+\subsubsection{if-then-else}
+\begin{lstlisting}
+  ?- Z = 3, (Z == 3 -> X = 1, Y = 2; X = 2, Y = 1).
+  % Z=3
+  % X=1
+  % Y=2
+\end{lstlisting}
+
+\subsection{Examples}
+\begin{lstlisting}
+lectures(monday, nolecture).
+lectures(tuesday, vp).
+lectures(tuesday, se).
+lectures(tuesday, ddbms).
+lectures(wednessday, ds).
+lectures(wednessday, mpl).
+lectures(thursday, vp).
+lectures(thrusday, se).
+lectures(friday, ds).
+lectures(friday, mpl).
+lectures(saturday, ai).
+lectures(saturday, ddbms).
+%% ?- lectures(friday, X), write(X),nl.
+%% ?- lectures(friday, X), write(X), nl, fail.
+\end{lstlisting}
+
+
+
+%%% Local Variables:
+%%% TeX-master: "cheatsheet"
+%%% End:

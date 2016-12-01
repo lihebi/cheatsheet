@@ -120,21 +120,22 @@
 %
 
 % should remain last usepackage:
-\usepackage%
-    [breaklinks,linktocpage,colorlinks,%
-      bookmarksnumbered,bookmarks=\bookmarks,%
-      linkcolor=\linkcolor,urlcolor=\urlcolor,%
-      pdfpagelayout=\pdfpagelayout,%
-      pdftitle=\maintitle,pdfauthor=\AUTHOR,%
-      pdfsubject=\SUBJECT,pdfkeywords=\KEYWORDS]%
-    {hyperref}
-%
+\usepackage [breaklinks,linktocpage,colorlinks,
+bookmarksnumbered,bookmarks=\bookmarks,
+linkcolor=\linkcolor,urlcolor=\urlcolor,
+pdfpagelayout=\pdfpagelayout,
+pdftitle=\maintitle,pdfauthor=\AUTHOR,
+pdfsubject=\SUBJECT,pdfkeywords=\KEYWORDS]
+{hyperref}
+
 \makeindex
-\titleformat{\section}{\sffamily\mdseries\slshape}
-            {\huge\thesection}{.7em}{\huge}[{\titlerule[0.25pt]}]
+
+%% I have to uncomment these two settings because they cause no outline
+% \titleformat{\section}{\sffamily\mdseries\slshape}
+%             {\huge\thesection}{.7em}{\huge}[{\titlerule[0.25pt]}]
             
-\titleformat{\subsection}{\sffamily\mdseries\slshape}
-            {\Large\thesubsection}{.7em}{\Large}[{\titlerule[0.25pt]}]
+% \titleformat{\subsection}{\sffamily\mdseries\slshape}
+%             {\Large\thesubsection}{.7em}{\Large}[{\titlerule[0.25pt]}]
 
 % Kill toc header as we want it to span columns
 \deftocheading{toc}{}

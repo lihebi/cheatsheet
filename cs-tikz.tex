@@ -353,7 +353,39 @@ This requires the \texttt{graphs} library.
   will be given a random name.
 \end{description}
 
-TODO: GROW DOWN
+Options
+\begin{description}
+\item [grow up/down/left/right]
+\item [branch up/down/left/right]
+\item [grow up/down/right/left sep=<distance>]
+\item [branch up/down/left/right sep=<distance>]
+\item [/tikz/graph/level <level>] \texttt{level 1/.style={}}
+\end{description}
+
+\subsection{Matrix}
+The columns are separated by \verb$&$, rows by \verb$\\$. The last
+line also needs an \verb$\\$.
+\verb$\matrix$ equals to \verb$\path \node [matrix]$
+\begin{lstlisting}
+  \matrix {
+    \node(a) {A}; & \node (b) {B}; \\
+    \node(c) {C}; & \node (d) {D}; \\
+  };
+\end{lstlisting}
+
+options
+\begin{description}
+\item [column sep]
+\item [row sep]
+\end{description}
+
+option group
+\begin{description}
+\item [row/column <number>]
+\item [row <number> column <number>]
+\item [every odd/even row/column]
+\end{description}
+
 
 \subsection{Tree}
 
@@ -368,18 +400,42 @@ TODO: GROW DOWN
 \end{tikzpicture}
 \end{lstlisting}
 
+option
+\begin{description}
+\item [level distance]
+\item [grow=<direction>]
+\item [grow'=<direction>]
+\end{description}
+
+option group
+\begin{description}
+\item [level <number>]
+\end{description}
+
+\subsection{Decoration}
+Must have \texttt{decorate} option, then specify the pattern by
+\texttt{decoration=}. \texttt{random steps} is useful.
+
+\begin{lstlisting}
+decorate, decoration={random steps,segment length=3pt,amplitude=1pt}
+\end{lstlisting}
+
+
 \subsection{Package}
 \subsubsection{shapes.multipart}
 \begin{lstlisting}
 mynode/.style={split, rectangle split parts=2}
 \end{lstlisting}
-\subsubsection{patterns}
-\subsubsection{positioning,fit,calc}
-\subsubsection{decorations.pathmorphing}
-\subsubsection{decorations.pathreplacing}
-\subsubsection{quotes}
-\subsubsection{graphs}
-\subsubsection{arrows.meta}
+\begin{description}
+\item [patterns]
+\item [positioning,fit,calc]
+\item [decorations.pathmorphing]
+\item [decorations.pathreplacing]
+\item [quotes]
+\item [graphs]
+\item [arrows.meta]
+\end{description}
+
 
 
 

@@ -1,0 +1,228 @@
+\section{Emacs}
+
+\subsection{general}
+\begin{description}
+\item [list-face-displays]
+\item [fill-region]
+\item [list-package] open the \texttt{*package*} buffer, \texttt{Ux}
+  to update all.
+\item [helm-etags-select]
+\end{description}
+
+\subsection{help}
+\begin{description}
+\item [describe-key-briefly] \texttt{C-h c} command name for a key
+  stroke.
+\item [where-is] \texttt{C-h w}, shortcut for a command
+\item [info] \texttt{C-h i} open the built-in info reader.
+\item [view-echo-area-messages]
+\end{description}
+
+\subsection{Dired}
+\begin{description}
+\item [dired-next-subdir]
+\item [dired-prev-subdir]
+\item [dired-tree-up]
+\item [dired-tree-down]
+\end{description}
+
+\subsection{window}
+\begin{description}
+\item [balance-window]
+\item [toggle-window-split]
+\end{description}
+
+\subsection{file}
+\begin{description}
+\item [revert-buffer] Reload file on disk
+\item [recover-file] recover from \texttt{\#xxx\#} file.
+\item [read-only-mode] disable it to edit read only files
+\end{description}
+
+\subsection{edit}
+
+\begin{description}
+\item [replace-rectangle]
+\item [upcase-word]
+\item [downcase-word]
+\item [transpose-words]
+\item [transpose-lines]
+\item [C-q xxx] insert a control sequence
+\item [capitalize-word]
+\item [fill-paragraph]
+\item [fill-region]
+\item [auto-fill-mode]
+\item [zap-to-char]
+\item [zap-up-to-char]
+\item [ispell] check spell 
+\item [flycheck] check on-the-fly
+\end{description}
+
+\subsection{programming}
+
+\begin{description}
+\item [checkdoc] check the warnings in doc string
+\item [C-x C-e] evaluate
+\item [C-u C-x C-e] evaluate and insert result
+\item [C-M-a] move to the beginning of defun
+\item [C-M-e] move to the end of defun
+\item [C-M-h] mark defun
+\item [C-M-f] move forward a sexp
+\item [C-M-b] move backward a sexp
+\item [C-M-k] kill a sexp
+\item [C-M-t] transpose expressions
+\item [C-M-<SPC>] mark following sexp
+\item [C-M-n] move to the next sexp
+\item [C-M-p] move to the previous sexp
+\item [C-M-u] move up parenthesis
+\item [C-M-d] move down parenthesis
+\item [C-M-x] evaluate defun
+\item [forward-sexp] forward semantic block
+\item [backward-sexp]
+\item [org-forward-heading-same-level] =C-c C-f=
+\item [org-backword-heading-same-level] =C-c C-b=
+\end{description}
+
+\subsection{Marking}
+\begin{description}
+\item [exhange-point-and-mark]
+\item [mark-word]
+\item [mark-sexp]
+\item [mark-paragraph]
+\item [mark-defun]
+\item [mark-page]
+\item [mark-whole-buffer]
+\item [set-mark-command] C-SPC, set mark, and activate it
+\item [C-SPC C-SPC] set mark, but not activate it.
+\item [C-u C-SPC] pop to previous mark in mark ring. current is stored
+  at the end of mark ring(rotating)
+\item [pop-global-mark] will store both position and buffer
+\item [set the mark] \texttt{C-SPC C-SPC}, \texttt{C-w}, search
+\end{description}
+
+\subsection{Register}
+\begin{description}
+\item [point-to-register] save ppposition in a register
+\item [jump-to-register]
+\item [jump-to-register] the register can store a file
+\item [copy-to-register]
+\item [insert-register]
+\end{description}
+
+
+\subsection{Key Map}
+To configure a specific key map.  Note that the =global-set-key= will
+\textit{not} overwrite a specific key map, because the specific one has a
+higher priority.
+
+\begin{lstlisting}[language=lisp]
+  (define-key org-mode-map (kbd "C-j")
+    (lambda()
+      (interactive)
+      (join-line -1)))
+\end{lstlisting}
+
+\subsection{Variables}
+\paragraph{File Local Variable}
+Emacs looks for the following line on first line or second line if
+first line is shebang. \texttt{mode} defines the major mode for this
+file, while unlimited number of variables follows, separated by
+\texttt{;}.
+
+\begin{lstlisting}
+-*- mode: Lisp; fill-column: 75; comment-column: 50; -*-=
+\end{lstlisting}
+
+
+A second way to specify file local variable is to have a ``local
+variables list'' near the end of the file (no more than 3000
+characters from the end of the file).  The =LocalXXX Variables:= and
+=XXXEnd:= will be matched literally, so literal that I have to add XXX
+to these $\ldots$
+\begin{lstlisting}
+This     /* Local XXX Variables:  */
+Is       /* mode: c           */
+Garbage  /* comment-column: 0 */
+AuCTex   TeX-master: "cheatsheet"
+Data     /* XXXEnd:           */
+\end{lstlisting}
+
+\paragraph{Directory Local Variable}
+Put \texttt{.dir-locals.el} at the root directory, and it will be in
+effect for all the files under that directory, recursively.  It should
+be an associate list, the car can be either a mode name (or \texttt{nil}
+applies to all modes) indicating the variables are for that mode, or a
+sub-directory name to apply only in that directory.
+\begin{lstlisting}[language=lisp]
+((nil . ((indent-tabs-mode . t)
+         (fill-column . 80)))
+ (c-mode . ((c-file-style . "BSD")
+            (subdirs . nil)))
+ ("src/imported"
+  . ((nil . ((change-log-default-name
+              . "ChangeLog.local"))))))
+\end{lstlisting}
+
+
+\subsection{Info}
+Info is a document system.  It is closely bundled with emacs, so I put
+it here.  To install some new info document in the system, issue the
+following commands (using =gnu-c-manual= as an example):
+
+\begin{lstlisting}
+# download the gnu-c-manual code
+make gnu-c-manual.info
+mv gnu-c-manual.info /usr/local/share/info
+cd /usr/local/share/info
+sudo install-info --info-file=gnu-c-manual.info --info-dir=.
+\end{lstlisting}
+
+\subsubsection{Info Operations}
+
+\begin{description}
+\item [SPC] page down, can cross node
+\item [BACKSPACE] page up, can cross node
+\item [M-n] \texttt{clone-buffer}, open a new info buffer
+\item [n] next node on same level
+\item [p] previous
+\item [{[}] next node regardless of level
+\item [{]}] previous
+\item [u] up node
+\item [l] back
+\item [r] forward
+\item [m] ~Info-menu~, convenient for search node title
+\item [s] TODO search  a text in the whole info file
+\item [i] TODO search indices only
+\end{description}
+
+
+\subsection{YASnippet}
+Put this into latex-mode directory as a file named ``desc'', and run \texttt{yas-reload-all}.
+\begin{lstlisting}[language=tex]
+# -*- mode: snippet -*-
+# name: desciption
+# key: desc
+# --
+\begin{description}
+$1
+\end{description}
+$2
+\end{lstlisting}
+% \subsection{Babel}
+% How to write a \texttt{ob-xxx.el} file?
+
+% \begin{enumerate}
+% \item search org-mode babel, you will get a link:
+%   http://orgmode.org/worg/org-contrib/babel/
+% \item In this link, there's a "languages"
+%   link. http://orgmode.org/worg/org-contrib/babel/languages.html
+% \item Under "Develop support for new languages" section, there's link
+%   to ob-template.el:
+%   http://orgmode.org/w/worg.git/blob/HEAD:/org-contrib/babel/ob-template.el
+% \item follow instruction to modify it.
+% \end{enumerate}
+% some good example to look at: ob-plantuml.el, ob-C.el
+
+%%% Local Variables:
+%%% TeX-master: "cheatsheet"
+%%% End:

@@ -110,6 +110,33 @@ database, but if you want, Command to update the =ls-R= database:
 \end{tabular}
 
 
+\subsection{Package: listings}
+Predefined languages:
+Ada, Algol, Ant, Assembler, Awk, bash, Basic, C, C++, CIL, csh,
+Delphi, Eiffel, erlang, Fortran, Gnuplot, Haskell, HTML, Java, Lisp,
+LLVM, Lua, make, Matlab, Mercury, ML, Octave, Pascal, Perl, PHP,
+PostScript, Prolog, Python, R, Ruby, S, Scala, sh, SQL, tcl, TeX,
+VBScript, Verilog, VHDL, XML, XSLT
+
+
+To make the code listing more pretty, the font needs to be changed.
+\verb$\usepackage{courier}$.
+
+global setting:
+
+\begin{lstlisting}
+\lstset{basicstyle=\ttfamily,breaklines=true}
+% \lstset{frame=b}
+\lstset{float,floatplacement=H,captionpos=b}
+% \lstset{numbers=left}
+\lstset{language=C}
+\lstset{showstringspaces=false}
+% \lstset{framextopmargin=10pt}
+% \lstset{framextopmargin=50pt,frame=t}
+% \lstset{float=htb,language=C,frame=single, basicstyle=\small, stringstyle=\ttfamily}
+\lstset{escapeinside={(*@}{@*)}}
+\end{lstlisting}
+
 
 %%% Local Variables:
 %%% TeX-master: "cheatsheet"

@@ -1,0 +1,389 @@
+\section{TikZ}
+
+Use of tikz packages.
+
+\begin{lstlisting}
+\usepackage{tikz}
+\usetikzlibrary{shapes.multipart}
+\end{lstlisting}
+
+You can generate picture as pdf file.  To generate figure, add the
+following lines, and execute: \texttt{pdflatex -shell-escape
+  helium.tex}
+
+\begin{lstlisting}
+\usetikzlibrary{external}
+\tikzexternalize
+\tikzset{external/force remake}
+\end{lstlisting}
+
+There's also some library not supported. They need luatex.
+\begin{lstlisting}
+\usetikzlibrary{graphs,graphdrawing}
+\usegdlibrary{layered}
+\end{lstlisting}
+
+To create a tikz picture, use
+\begin{lstlisting}
+  \begin{figure*}[ht]
+    \centering
+    \begin{tikzpicture}[options]
+    \end{tikzpicture}
+    \caption{\label{}}
+  \end{figure*}
+\end{lstlisting}
+
+You can also create picture using \verb$\tikz$ command. It is the
+same as begin and end tikzpicture, and put command inside. If only one
+command, the curly braces are not required.
+\begin{lstlisting}
+\tikz[⟨options⟩]{⟨path commands⟩}
+\end{lstlisting}
+
+scope can be useful to specify styles.
+\begin{lstlisting}
+\begin{scope}[color=red]
+\end{scope}
+\end{lstlisting}
+
+The most common errors for tikz are: miss semicolon; miss curly
+braces; miss include tikz library.
+
+Set options by \verb$\tikzset$.
+\begin{lstlisting}
+\tikzset{>=latex}
+\tikzset{grid/.style={gray,very thin,opacity=1}}
+\tikzset{anchor/.append code=\let\tikz@auto@anchor\relax}
+\tikzset{label anchor/.style={tikz@label@post/.append
+    style={anchor=#1}}}
+\end{lstlisting}
+
+\subsection{Coordinate}
+\begin{lstlisting}
+([shift={(2,-0.5)}] iflen.east)
+\end{lstlisting}
+
+Inside a path, the first one must be a coordinate. The following ones
+can use \texttt{+} or \texttt{++}, meaning shift from current, as well
+as shift and move current.
+
+The general syntax is
+\begin{lstlisting}
+  (<coordinate system> cs:<list of key=value>)
+\end{lstlisting}
+
+The following coordinate systems are available:
+\begin{description}
+\item [canvas]
+  \begin{description}
+  \item [x]
+  \item [y]
+  \end{description}
+\item [xyz]
+  \begin{description}
+  \item [x]
+  \item [y]
+  \item [z]
+  \end{description}
+\item [canvas polar]
+  \begin{description}
+  \item [angle]
+  \item [radius]
+  \item [x radius]
+  \item [y radius]
+  \end{description}
+\item [xyz polar] same as above
+  % \begin{description}
+  % \item [angle]
+  % \item [radius]
+  % \item [x radius]
+  % \item [y radius]
+  % \end{description}
+\item [xy polar] alias for \texttt{xyz polar}
+\item [node]
+  \begin{description}
+  \item [name]
+  \item [anchor] north, etc
+  \item [angle] degreee, e.g. 90, -70
+  \end{description}
+\item [tangent]
+  \begin{description}
+  \item [node]
+  \item [point]
+  \item [solution]
+  \end{description}
+\end{description}
+
+Using \texttt{calc} library, you can compute the coordinate.
+\begin{lstlisting}
+([⟨options⟩]$⟨coordinate computation⟩$)
+($(a)+3*(1cm,0)$)
+\end{lstlisting}
+
+
+
+\subsection{Style}
+style can be defined.
+\begin{lstlisting}
+  \begin{tikzpicture}[help lines/.style={blue!50,very thin}]
+    \draw[help lines] (2,0) grid +(2,2);
+  \end{tikzpicture}
+\end{lstlisting}
+
+\subsection{Path}
+Add \texttt{-- cycle} at the end of a path will complete the path by
+connecting back to the start.
+
+\texttt{/tikz/every path} can be used to customize all path.
+
+Operations
+\begin{description}
+\item [move-to] just coordinates
+\item [line-to]
+  \begin{description}
+  \item [straight line] \texttt{-- (1,1)}
+  \item [horizontal and vertical] \texttt{|-} or \texttt{-|}
+  \end{description}
+\item [curve-to] \texttt{.. controls <c> (and <d>) ..}
+\item [rectangle] \texttt{(0,0) rectangle (1,1)}
+\item [rounded corners]
+\item [sharp corners]
+\item [circle] \texttt{circle[⟨options⟩]}. It has option
+  \texttt{/tikz/every circle}
+  \begin{description}
+  \item [x radius]
+  \item [y radius]
+  \item [radius]
+  \item [at]
+  \end{description}
+\item [ellipse] ellipse[⟨options⟩] Same as circle
+\item [arc]
+  \begin{description}
+  \item [start angle]
+  \item [end angle]
+  \item [delta angle]
+  \end{description}
+\item [grid] \verb$\draw[grid] (-2,0) grid (2,12);$
+  \begin{description}
+  \item [step]
+  \item [xstep]
+  \item [ystep]
+  \item [help lines]
+  \end{description}
+\item [to] TODO
+\item [foreach] TODO
+\item [let] TODO
+\end{description}
+
+\subsection{Action}
+\verb$\draw$ equals \verb$\path{draw}$
+Action
+\begin{description}
+\item [draw]
+\item [fill]
+\item [filldraw]
+\item [pattern] options: \texttt{pattern color}
+  \begin{description}
+  \item [dots]
+  \item [fivepointed stars]
+  \item [bricks]
+  \end{description}
+\item [shade] It has an option \texttt{shading
+    angle=<degrees>}. Another option \texttt{shading=<name>} can be:
+  \begin{description}
+  \item [axis]
+  \item [radial]
+  \item [ball]
+  \end{description}
+\item [shadedraw]
+\item [clip]
+\item [useasboundingbox]
+\end{description}
+
+
+Graphic parameters
+\begin{description}
+\item [color] used for fill, draw, text. Can use \texttt{red!20!black}
+  thanks to \texttt{color} package.
+  \begin{description}
+  \item [draw=<color>]
+  \item [fill=<color>]
+  \item [text=<color>] apply on text
+  \end{description}
+
+\item [draw] 
+\item [line width] Line can be: ultra thin, very thin, thin,
+  semithick, thick, very thick, ultra thick. Of course the more
+  flexible way is using \texttt{line width = <dimension>}.
+\item [dash patterns]
+  \begin{description}
+  \item [dash pattern=]
+  \item [dash phase=]
+  \item [solid]
+  \item [<densely> <loosely> dotted]
+  \item [<densely> <loosely> dashed]
+  \item [<densely> <loosely> dash dot]
+  \item [<densely> <loosely> dash dot dot]
+  \end{description}
+\item [double] with option \texttt{double distance=<dimension>}
+\end{description}
+
+\subsection{Arrows}
+To add the arrow tips, first add \texttt{[->]} option for the tikz
+environment.  The library \texttt{arrows.meta} defines etras arrow
+types.
+
+
+\subsection{Node \& Edge}
+
+\begin{lstlisting}
+node [⟨options⟩] (⟨name⟩) at (⟨coordinate⟩) {⟨contents⟩};
+\end{lstlisting}
+
+\verb$\path node$ equals \verb$\node$. \texttt{every node} and
+\texttt{every <shape> node} is available.
+
+Multi part node:
+\begin{lstlisting}
+  \node[circle split,draw,double,fill=red!20] {top \nodepart{lower} bot};
+\end{lstlisting}
+
+\subsubsection{Option}
+\begin{description}
+\item [align=left] have to have this to make the \verb$\\$ able to create
+  newline
+\item [shape=<shape name>] \texttt{shape=} is optional. Can be
+  rectangle, circle.
+\item [inner sep=<dimension>]
+\item [inner xsep]
+\item [inner ysep]
+\item [outer sep]
+\item [outer xsep]
+\item [outer ysep]
+\item [minimum height]
+\item [minimum width]
+\item [minimum size]
+\end{description}
+
+
+\subsubsection{Position}
+\begin{description}
+\item [anchor]
+\item [above=<offset]
+\item [below]
+\item [left]
+\item [right]
+\item [above left]
+\item [above right]
+\item [below left]
+\item [below right]
+\item [centered]
+\item [fit] \texttt{fit=(a) (b) (c)}
+\end{description}
+
+Placing node on edge
+\begin{description}
+\item [pos=<fraction>]
+\item [auto]
+\item [swap]
+\item ['] alias of swap
+\item [sloped]
+\item [allow upside down]
+\item [midway]
+\item [near start] 0.25
+\item [near end] 0.75
+\item [very near start] 0.125
+\item [very near end] 0.875
+\item [at start]
+\item [at end]
+\end{description}
+
+\subsubsection{Label \& Pin}
+General syntax is \texttt{label=[<options>]<angle>:<text>}.
+\texttt{every label/.style} is available.
+
+Options:
+\begin{description}
+\item [label position=<angle>]
+\item [absolute=boolean]
+\item [label distance]
+\end{description}
+
+General syntax for pin is \texttt{pin=[<options>]<angle>:<text>}
+
+options:
+\begin{description}
+\item [pin distance]
+\item [every pin]
+\item [pin position=<angle>]
+\item [every pin edge]
+\end{description}
+
+The \texttt{quotes} package provides quote syntax:
+\texttt{"<text>"<options>}. The option \texttt{every label quotes} is
+available.
+\begin{lstlisting}
+\tikz \node ["my label" red, draw] {my node};
+\end{lstlisting}
+
+
+\subsection{Graph}
+This requires the \texttt{graphs} library.
+
+\begin{description}
+\item [graph syntax] \verb$\path graph[⟨options⟩]⟨group specification⟩$
+\item [group spec] \verb${[⟨options⟩]⟨list of chain specifications⟩}$
+  The nodes can be grouped by surround them with curly braces. The
+  entry and exit points are computed for the chains in and out the
+  group.
+
+\item [chain spec] consists of list of node spec seperated by edge
+  spec
+\item [edge spec] each accept an optional \texttt{[<options>]} after them.
+  \begin{description}
+  \item [->] directed edge
+  \item [--] undirected edge
+  \item [<-] backward
+  \item [<->] bidirected
+  \item [-!-] no edge
+  \end{description}
+\item [node spec] \verb$"<node name>"/"<text>"[<options>]$ The nodes
+  used have a special notation. The quotes are required only when the
+  node name contains special symbols. If the node name is empty, it
+  will be given a random name.
+\end{description}
+
+TODO: GROW DOWN
+
+\subsection{Tree}
+
+\begin{lstlisting}
+\begin{tikzpicture}
+  \node {root}
+    child {node {left}}
+    child {node {right}
+      child {node {child}}
+      child {node {child}}
+    };
+\end{tikzpicture}
+\end{lstlisting}
+
+\subsection{Package}
+\subsubsection{shapes.multipart}
+\begin{lstlisting}
+mynode/.style={split, rectangle split parts=2}
+\end{lstlisting}
+\subsubsection{patterns}
+\subsubsection{positioning,fit,calc}
+\subsubsection{decorations.pathmorphing}
+\subsubsection{decorations.pathreplacing}
+\subsubsection{quotes}
+\subsubsection{graphs}
+\subsubsection{arrows.meta}
+
+
+
+
+%%% Local Variables:
+%%% TeX-master: "cheatsheet"
+%%% End:

@@ -12,7 +12,7 @@ Install swi-prolog, and emacs should be able to support it.  In a
 prolog file, select a region, and \texttt{C-c C-c r} (execute region).
 Using this for facts and rules, but evalute query direct in the repl.
 
-\subsection{From the slides}
+\subsection{Concepts}
 
 A Horn Clause: $c \quad h_1 \wedge h_2 \wedge \ldots \wedge h_n$.
 $c$ is the consequent, the conjunction of $h_i$ is the antecedent.
@@ -20,7 +20,7 @@ It means if all $h_i$ are true, $c$ is true.
 This is written in prolog as:
 
 \begin{lstlisting}
-c :- h1,h2,...,hn
+  c :- h1,h2,...,hn
 \end{lstlisting}
 
 Logic program is actually a collection of Horn Clauses.
@@ -43,7 +43,9 @@ Example:
   ?- loves(mary, tom).
 \end{lstlisting}
 
-Prolog can have variables. It is often used in rules and quries.
+Prolog can have variables. Everything start from upper case letter or
+underscore is a variable. A single underscore is anonymous
+variable. Variables are often used in rules and quries.
 \begin{lstlisting}
   loves(X, Y) :- isamother(X), childof(Y, X).
   ?- loves(mary, X).
@@ -51,33 +53,26 @@ Prolog can have variables. It is often used in rules and quries.
 
 Syntax of prolog:
 \begin{lstlisting}
-Clause ->  Predicate.
-         | Predicate :- PredicateSeq.
-PredicateSeq ->  Predicate
-               | Predicate, PredicateSeq
-Predicate -> PredName(TermSeq)
-TermSeq   ->  Term
-            | Term, TermSeq
-Term      ->  FunctorName(TermSeq) | Constant | Variable
+  Clause :: Predicate. | Predicate :- PredicateSeq.
+  PredicateSeq :: Predicate | Predicate, PredicateSeq
+  Predicate :: PredName(TermSeq)
+  TermSeq :: Term | Term, TermSeq
+  Term :: FunctorName(TermSeq) | Constant | Variable
 \end{lstlisting}
 
 \subsection{Executing}
 \subsubsection{Unification}
 Given two atomic formula (predicates), they can be unified if and only
 if they can be made syntactically identical by replacing the variables
-in them by some terms.
-
-Unify childof(jane, X) and childof(jane, mary).
-
-\textit{MGU} results from a substitution that bounds free variables as little
-as possible
+in them by some terms. For example, unify \texttt{childof(jane, X)}
+and \texttt{childof(jane, mary)}.  \textit{MGU} results from a
+substitution that bounds free variables as little as possible
 
 \subsubsection{Substitution}
 Substitution maps variables to terms.  Instantiation is the
 application of substitution to all variables in a prolog formula,
-term.
-
-Unify $childof(jane, X)$ and $childof(Y, mary)$ by $[X \rightarrow mary, Y \rightarrow jane]$
+term. E.g. unify $childof(jane, X)$ and $childof(Y, mary)$ by
+$[X \rightarrow mary, Y \rightarrow jane]$
 
 \subsubsection{Unification and Computing with Logic}
 
@@ -119,25 +114,15 @@ loves(X, Y) :- isamother(X), childof(Y, X).
 ?- loves(mary, X)
 \end{lstlisting}
 
-An graph example:
-\begin{lstlisting}
-edge(a, b).
-edge(b, c).
-edge(c, a).
-reach(X, Y) :- edge(X, Y).
-reach(X, Y) :- edge(X, Z), reach(Z, Y).
-?- reach(a, c)
-\end{lstlisting}
-
 \subsection{Other Prolog Features}
 \subsubsection{List}
 
-\begin{description}
-\item [[a, b, c]] a list of 3 elements
-\item [[]] empty list
-\item [[a, [b, c], [[d, e]], []]] list can contain different type
-\item [[a|[b, c]]] head and tail
-\end{description}
+\begin{itemize}
+\item \texttt{[a, b, c]}: a list of 3 elements
+\item \texttt{[]}: empty list
+\item \texttt{[a, [b, c], [[d, e]], []]}: list can contain different type
+\item \texttt{[a|[b, c]]}: head and tail
+\end{itemize}
 
 Example:
 \begin{lstlisting}
@@ -174,6 +159,16 @@ lectures(saturday, ai).
 lectures(saturday, ddbms).
 %% ?- lectures(friday, X), write(X),nl.
 %% ?- lectures(friday, X), write(X), nl, fail.
+\end{lstlisting}
+
+An graph example:
+\begin{lstlisting}
+edge(a, b).
+edge(b, c).
+edge(c, a).
+reach(X, Y) :- edge(X, Y).
+reach(X, Y) :- edge(X, Z), reach(Z, Y).
+?- reach(a, c)
 \end{lstlisting}
 
 

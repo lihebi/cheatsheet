@@ -120,13 +120,17 @@
 %
 
 % should remain last usepackage:
-\usepackage [breaklinks,linktocpage,colorlinks,
-bookmarksnumbered,bookmarks=\bookmarks,
-linkcolor=\linkcolor,urlcolor=\urlcolor,
-pdfpagelayout=\pdfpagelayout,
-pdftitle=\maintitle,pdfauthor=\AUTHOR,
-pdfsubject=\SUBJECT,pdfkeywords=\KEYWORDS]
-{hyperref}
+% \usepackage [breaklinks,linktocpage,colorlinks,
+% bookmarksnumbered,bookmarks=\bookmarks,
+% linkcolor=\linkcolor,urlcolor=\urlcolor,
+% pdfpagelayout=\pdfpagelayout,
+% pdftitle=\maintitle,pdfauthor=\AUTHOR,
+% pdfsubject=\SUBJECT,pdfkeywords=\KEYWORDS]
+% {hyperref}
+
+%% it seems that I have to use this without those options to have the
+%% outline. Not sure which one caused it.
+\usepackage{hyperref}
 
 \makeindex
 
@@ -267,6 +271,8 @@ pdfsubject=\SUBJECT,pdfkeywords=\KEYWORDS]
 \input{cs-tikz}
 \clearpage
 \input{cs-prolog}
+\clearpage
+\input{cs-ai}
 
 % \input{clqr-typographic-conventions}
 % \clearpage

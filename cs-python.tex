@@ -194,10 +194,247 @@ lambda x: x%2==0
 \end{lstlisting}
 
 The usage of lambda is often in /map/ and /filter/.
-% \begin{description}
-% \item [map(lambda_exp, mylist)] will execute the lambda expression on
-%   each element of the list, and return a list containing the results.
-% \end{description}
+\begin{description}
+\item [map(lambdaexp, mylist)] will execute the lambda expression on
+  each element of the list, and return a list containing the results.
+\end{description}
+
+\subsection{Packaging}
+Exposing API: the following only expose =foo= but not =bar=.
+\begin{lstlisting}
+__all__ = ['foo']
+def foo():
+  pass
+def bar():
+  pass
+\end{lstlisting}
+
+\subsubsection{importing}
+The local structure directory must contain the \verb$__init__.py$ file to be able to import.
+\begin{lstlisting}
+|-- main.py
+|-- mypackage
+    |-- __init__.py
+    |-- a.py
+    |-- b.py
+    |-- subdir
+        |-- __init__.py
+        |-- c.py
+\end{lstlisting}
+
+The import statements should be:
+\begin{lstlisting}
+from mypackage import a
+from mypackage.b import foo as myfoo
+from mypackage.subdir import c
+\end{lstlisting}
+
+\subsection{Thread}
+\begin{lstlisting}
+from threading import Thread
+
+class MyThread(Thread):
+  def __init__(self, arg):
+    Thread.__init__(self)
+    self.arg = arg
+  def run(self):
+    pass
+
+t = MyThread(arg)
+t.start()
+\end{lstlisting}
+
+
+
+
+
+\subsection{Type}
+\begin{description}
+\item [not True]
+\item [i += 1]
+\end{description}
+\subsubsection{conversion}
+\begin{description}
+\item [string to integer] \texttt{int('45')}
+\item [integer to string] \texttt{str(45)}
+\item [ASCII to char] \texttt{chr(100)} returns \texttt{'d'}
+\item [char to ASCII] \texttt{ord('d')} returns \texttt{100}
+\end{description}
+
+\subsection{Black Tech}
+If else or:
+\begin{lstlisting}
+var = d.get('key') or 0
+# is equal to:
+var = d.get('key') if d.get('key') else 0
+\end{lstlisting}
+
+list comprehension
+
+\begin{lstlisting}
+even_squares = [x**2 for x in l if x%2 == 0]
+\end{lstlisting}
+
+\subsection{Pep8}
+Indent:
+\begin{itemize}
+\item *function and class* should be separated by *2 lines*
+\item *In a class*, function should be separated by *1 line*
+\item 1 space before and after variable assignment
+\end{itemize}
+
+Naming
+\begin{itemize}
+\item function, variable, attribute: \verb$func_var_attr$
+\item protected instance attributes: \verb$_protected_field$
+\item private instance attributes: \verb$__private_field$
+\item class and exception: \verb$ClassExceptionName$
+\item module level constants: \verb$CONSTANT$
+\item instance method of class should use =self= as first parameter, refer to the object
+\item class method should use =cls= as first parameter, refer to the class
+\end{itemize}
+
+Expression
+
+\begin{itemize}
+\item use \texttt{a is not b} instead of \sout{\texttt{not a is b}}
+\item use \texttt{if not list} instead of \sout{\texttt{if len(list) == 0}}
+\end{itemize}
+
+Import
+\begin{itemize}
+\item always use absolute path
+\item if must use relative, use =from . import foo= instead of +=import foo=+
+\end{itemize}
+
+\subsubsection{document}
+One can use one line or multi-line document.
+The doc string can be retrieved by \verb$func.__doc__$.
+\begin{lstlisting}
+def func():
+  """one line doc"""
+
+def func():
+  """The outline
+
+  The above empty line is required.
+  Here's the detailed documentation.
+  """
+\end{lstlisting}
+
+\subsection{IO}
+\begin{lstlisting}
+print('xxx', end='')
+\end{lstlisting}
+
+\begin{lstlisting}
+  f = open('text.txt')
+  f.read() # return all content
+
+  f = open('text.txt')
+  for line in f:
+      print(line)
+
+  with open('a.txt') as f:
+      for line in f:
+          print(line)
+\end{lstlisting}
+
+read from stdin:
+\begin{lstlisting}
+for line in sys.stdin:
+  print(line)
+\end{lstlisting}
+
+get command line argument: \texttt{sys.argv}
+
+
+
+
+
+
+\subsection{Operating System}
+
+\subsubsection{Work filesystem}
+\begin{lstlisting}
+import os
+for root,dirs,files in os.walk('.'):
+  for f in files:
+    print f
+\end{lstlisting}
+
+\begin{description}
+\item [os.path.abspath('relative/path/to/file')]
+\item [os.path.exists("/path/to/file")]
+\item [os.rename('old', 'new')]
+\end{description}
+
+
+\subsubsection{Shell command}
+\begin{description}
+\item [os.system] simply run command
+\item [os.popen] access to input output
+  \begin{lstlisting}
+    stream = os.popen("some command")
+    stream.read()
+  \end{lstlisting}
+\item [subprocess.Popen]
+  \begin{lstlisting}
+    p = subprocess.Popen("echo Hello World", shell=True, stdout=subprocess.PIPE)
+    p.stdout.read()
+    s = subprocess.check_output('wc -l', stdin=p.stdout)
+  \end{lstlisting}
+\item [subprocess.call] this is the same as =subprocess.Popen= except that it waits and gives return code.
+  \begin{lstlisting}
+    return_code = subprocess.call("echo Hello World", shell=True, stdout=subprocess.DEVNULL)
+  \end{lstlisting}
+\end{description}
+
+\subsection{Third party libraries}
+\subsubsection{argparse}
+\begin{lstlisting}
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('-q', '--query', help='query github api', require=True)
+parser.add_argument('-d', '--download', help='do download', action='store_true')
+args = parser.parse_args()
+\end{lstlisting}
+
+\subsubsection{urllib}
+\begin{lstlisting}
+from urllib import request
+import json
+
+url = 'https://api.github.com'
+api = '/search/repositories'
+query = 'language:C&stars:>10&per_page='+size
+response = request.urlopen(url+api+"?q="+query)
+
+s = response.read().decode('utf8')
+j = json.loads(s)
+# j will be a mix of list and dict
+\end{lstlisting}
+
+\subsubsection{XML}
+\begin{lstlisting}
+import xml.etree.ElementTree as ET
+root = ET.fromstring(s)
+# XPath
+nodes = root.findall('{http://www.sdml.info/srcML/src}function')
+for node in nodes:
+  # do with node
+  pass
+\end{lstlisting}
+
+APIs
+\begin{description}
+\item [node.find(XPath)]
+\item [node.findall(XPath)]
+\item [node.get(Attribute)]
+\item [node.text]
+\end{description}
+
+
 
 
 

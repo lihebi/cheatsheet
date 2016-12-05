@@ -1,0 +1,155 @@
+\section{sed}
+
+\subsection{Introduction}
+The sed version on Mac OS and GNU Linux are different.
+So, use gnu! On Mac, install
+\begin{lstlisting}
+brew install gnu-sed
+\end{lstlisting}
+
+This will make a =gsed= command available.
+To write a cross platform script, use
+\begin{lstlisting}
+echo "OSTYPE: " $OSTYPE
+SED=sed
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    SED=sed
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    SED=gsed
+fi
+$SED -E -e "460,$ s/REG[0-9]{1,2}//g" compress42.c.orig > compress42.bugsig.c
+\end{lstlisting}
+
+\subsubsection{About the regular expression version}
+\texttt{-E} will enable extra features, such as: \texttt{a{1,2}}
+See \verb$re_format(7)$ for details.
+
+There's no =\d=, so use =[0-9]= instead. The man page says =[:digit:]= can be used, but it seems not working.
+
+\subsection{usage}
+in shell script
+
+\begin{lstlisting}
+#!/bin/sed -f
+#!/bin/sed -nf
+\end{lstlisting}
+
+\subsection{concepts}
+\begin{description}
+\item [input]
+\item [output]
+\item [pattern space]
+\item [hold space] This is a spare pattern space, used to remember the
+  data in pattern buffer
+\end{description}
+
+\subsection{workflow}
+\begin{enumerate}
+\item copy a line from input(exclude the tailing newline) into pattern buffer
+\item apply command(s) to it
+\item output
+\end{enumerate}
+
+\subsection{cmd args}
+\begin{description}
+\item [-n] by default each line of input is echoed to the standard
+  output after all of the commands have been applied to it. The -n
+  option suppresses this behavior
+\item [-e] sed -e 'xxx' -e 'xxx' -e 'xxx'
+\item [-f] script file
+\end{description}
+
+
+\subsection{range}
+sed will only apply command for the lines in the specified range.
+If the command is preceded with =!=, that means the command works on lines not in the range.
+
+\begin{lstlisting}
+sed '1,100 s/A/a/' # by line number
+sed '101,$ s/A/a/' # $ is last line
+sed '/start/,/stop/ s/#.*//' # by pattern
+\end{lstlisting}
+
+\subsection{commands}
+
+edit
+\begin{tabular}{l|l|l}
+shortcut & name & description\\
+\hline
+a & add & \\
+i & insert & \\
+c & change & \\
+d & delete & \\
+s & substitute & \\
+ &  & \\
+\end{tabular}
+
+output
+
+\begin{tabular}{l|l|l}
+shortcut & name & description\\
+\hline
+= & print & \\
+l & look & \\
+p & print & \\
+n & next & \\
+r & read & \\
+w & write & \\
+\end{tabular}
+
+flow control
+
+\begin{tabular}{l|l|l}
+shortcut & name & description\\
+\hline
+q & quit & \\
+b & branch & \\
+t & test & \\
+:label &  & \\
+\end{tabular}
+\subsection{examples}
+
+print
+
+\begin{lstlisting}
+# add line numbers first,
+# then use grep,
+# then just print the number
+cat -n file | grep 'PATTERN' | awk '{print $1}'
+# the equilvalence
+sed -n '/PATTERN/ =' file
+\end{lstlisting}
+
+substitute
+
+\begin{lstlisting}
+s/pattern/&/ # '&' stands for the total match
+# in extend mode(-E), can use \1 \2
+s/(a)b/\1/
+s//string/ # use the last run-time used pattern
+s/xxx/xxx/g # substitute globally: all
+# there will not be recursion. sed will not examine the generated string
+s/loop/loop loop/g # will NOT run forever
+s/xxx/xxx/2 # only substitute the second match
+s/xxx/xxx/g2 # substitute 2,3,4,...
+s/xxx/xxx/p # will print out even if -n is used
+s/xxx/xxx/I p # ignore case; command can be used together
+s/a/A/2pw /tmp/file # combine more
+\end{lstlisting}
+
+delete
+
+\begin{lstlisting}
+# -i: make change to the original file
+# /d: delete the line if match
+sed -i '/@slice/d' $ClassName.java
+sed -i 'g/@slice/d' xx.java # remove all
+sed '/^$/d' # remove all empty lines
+sed '11,$ d' # only output first 10 lines
+sed '1,/^$/ d' # delete everything up to the first blank line.
+\end{lstlisting}
+
+
+%%% Local Variables:
+%%% TeX-master: "cheatsheet"
+%%% End:

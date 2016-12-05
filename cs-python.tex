@@ -1,0 +1,206 @@
+\section{Python}
+\subsection{Scoping}
+There're four levels:
+\begin{itemize}
+\item current scope
+\item parent scope
+\item module scope (global)
+\item built-in scope
+\end{itemize}
+
+\texttt{nonlocal} keyword specify this variable should be referenced
+to the parent scope.  But, this will not reach global.  Instead, the
+=global= keyword declares the listed variables to be in the module
+level scope.
+
+\begin{quote}
+The nonlocal statement causes the listed identifiers to refer to previously bound variables in the nearest enclosing scope excluding globals.
+\end{quote}
+
+As an example:
+\begin{lstlisting}[language=python]
+var = 0 # global
+
+def outer():
+  var = 1 # parent
+  def inner():
+    nonlocal var
+    var = 2 # local
+    global var
+    var =3
+  inner()
+  # var = 2
+
+outer()
+# global var = 3
+\end{lstlisting}
+
+
+
+\subsection{Collection}
+
+\subsubsection{String}
+
+\paragraph{Concatenation}
+\begin{itemize}
+\item concatenate two strings directly by =+=.
+\item need to convert integer to string before concatenate: =s + str(35)=
+\end{itemize}
+
+\paragraph{split}
+\begin{description}
+\item [str.split(sep=None)] default by white space
+\item [str.strip()] strip out white space at both begin and end
+\item [str.replace(old, new)] replace /all/.
+\item [str.startswith(s)]
+\item [str.endswith(s)]
+\end{description}
+
+\subsubsection{tuple}
+TODO
+\subsubsection{ List}
+\paragraph{Slicing}
+The slicing syntax is \texttt{l[start:end:step]}.
+The slicing will return a \textit{new} list. Change to that list will not change the original one.
+
+\begin{lstlisting}
+l[4]
+l[4:]
+l[::2]
+l[:-1]
+\end{lstlisting}
+
+However, assign to the slicing itself /will change/ the original one:
+\begin{lstlisting}
+l[1:2] = [4,5,6]
+\end{lstlisting}
+
+Also, assign to a new variable only assign the reference:
+\begin{lstlisting}
+a = [1,2,3]
+b = a # only a reference
+\end{lstlisting}
+
+\paragraph{create a list}
+\begin{description}
+\item [range(stop)]
+\item [range(start, stop[, step])]
+\end{description}
+
+
+\subsubsection{Dictionary}
+Create:
+\begin{lstlisting}
+x = {'a': 1, 'b': 2}
+\end{lstlisting}
+
+Dictionary is not sorted. Use \texttt{collections.OrderedDict} if you
+want this feature.  Basically it remember the order when the elements
+are inserted.
+
+\begin{lstlisting}
+import collections
+od = collections.OrderedDict(sorted(d.items()))
+\end{lstlisting}
+
+Merge two dictionary (=x= and =y=):
+\begin{lstlisting}
+z = x.copy()
+z.update(y)
+\end{lstlisting}
+
+
+\subsubsection{Set}
+\begin{lstlisting}
+s = set()
+s.add(x)
+if x in s:
+  pass
+\end{lstlisting}
+
+
+
+
+\subsection{Algorithm}
+\subsubsection{sort}
+TODO
+
+sort a dictionary by value:
+\begin{lstlisting}
+sorted(dict1, key=dict1.get) # => list
+sorted(dict1, key=dict1.get, reverse=True)
+\end{lstlisting}
+
+
+\subsection{Function}
+\subsubsection{variadic parameter}
+use =*args= syntax, and =args= will be a /tuple/:
+\begin{lstlisting}
+  def foo(*args):
+    for a in args:
+      print a
+\end{lstlisting}
+
+use =**args= to capture all /keyword arguments/.
+
+\begin{lstlisting}
+def bar(**kwargs):
+  for a in kwargs:
+    print a, kwargs[a]
+\end{lstlisting}
+
+Combine them together:
+\begin{lstlisting}
+def foobar(kind, *args, **kwargs):
+  pass
+\end{lstlisting}
+
+Also, there's a concept for the reverse thing: unpack argument list from a list, with =*list=:
+\begin{lstlisting}
+def foo(a,b):
+  pass
+
+l = [1,2]
+foo(*l)
+\end{lstlisting}
+
+on python3, this syntax can appear on left side
+\begin{lstlisting}
+first, *rest = [1,2,3,4]
+first,*l,last = [1,2,3,4]
+\end{lstlisting}
+
+\subsection{Exception}
+To give a quick feel:
+\begin{lstlisting}
+try:
+  pass
+except TypeError as e: # capture the exception into a variable
+  pass
+except AnotherError: # does not capture
+  pass
+except: # all exception
+  pass
+else: # if doesn't raise an exception
+  pass
+finally:
+  pass
+\end{lstlisting}
+
+\subsection{Lambda}
+\begin{lstlisting}
+lambda x : x+2
+lambda x: x%2==0
+\end{lstlisting}
+
+The usage of lambda is often in /map/ and /filter/.
+% \begin{description}
+% \item [map(lambda_exp, mylist)] will execute the lambda expression on
+%   each element of the list, and return a list containing the results.
+% \end{description}
+
+
+
+%%% Local Variables:
+%%% TeX-master: "cheatsheet"
+%%% End:

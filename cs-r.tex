@@ -1,25 +1,6 @@
 \section{R}
 
-
-
-\subsection{Tmp}
-\begin{description}
-\item [str] show the structure of arbitrary type
-\item [na.omit] can omit the NA values in data frame
-\end{description}
-
-A data frame is a list of equal-length vectors.  When getting the data
-from read.csv, the result is a data frame.  Use =names= to work on
-data frames will emit the names.
-\begin{itemize}
-\item Since it is a list, using =[]= to index will give also the list,
-  a.k.a. data frame, retaining names.  You can use a vector as index.
-\item Using =[[]]= to index will give the value, dropping names.  You
-  cannot use a vector as index.
-\end{itemize}
-
 \subsection{Setting up}
-
 \subsubsection{Packages}
 \begin{description}
 \item [library()] see the list of installed packages.
@@ -28,243 +9,229 @@ data frames will emit the names.
 \item [install.packages()] and =update.packages()= install and update packages.
 \end{description}
 
-\subsubsection{Emacs ESS}
-To start ESS session, run command =S=.  ESS will create a command
-interface as a buffer.  Execute =?foo= will open the =R-doc= for the
-function =foo=.
+\subsection{Interface}
+To start ESS session, run command \texttt{R}.
 
-There's a babel in org mode for R, so just =C-c C-c= would work.  This
-will prompt to create a session.  One special for this babel is you
-can evaluate by line, using =C-<RET>= in the edit buffer.
-
-   Keep the session using the header:
-\begin{lstlisting}
-#+PROPERTY: session *R*
-\end{lstlisting}
-
-   To export a graph:
-
-\begin{lstlisting}
-:file image.png :results output graphics :exports both
-\end{lstlisting}
-
-   To export ordinary result:
-
-\begin{lstlisting}
-:exports both
-\end{lstlisting}
-
-   To export some summary data:
-
-\begin{lstlisting}
-:exports both :results output org
-\end{lstlisting}
-
-\subsubsection{Interactive command}
-=setwd("/absolute/path")= set the working directory.
-
-In the interactive command line interface,
+\subsubsection{ESS bindings}
 \begin{description}
+\item [C-c C-c] ess-eval-region-or-function-or-paragraph-and-step
+\item [C-c C-r] ess-eval-region
+\end{description}
+
+\subsubsection{Babel}
+There's a babel in org mode for R, so just \texttt{C-c C-c} would
+work.  This will prompt to create a session.  One special for this
+babel is you can evaluate by line, using \texttt{C-<RET>} in the edit
+buffer.
+
+\begin{description}
+\item [\#+PROPERTY: session *R*] Keep the session
+\item [:results output graphics] export a graph
+\item [:results output org] summary data in org format
+\item [:file a.png] write the graph into a file
+\item [:exports both] export both code and result
+\end{description}
+
+
+
+\subsubsection{commands}
+\begin{description}
+\item [setwd("/absolute/path")] set the working directory.
 \item [q()] to exit, 
 \item [help(lm)] to show help message for a built-in function.
 \item [?lm] shows documentation
 \item [??solve] shows documentation
 \item [example(topic)] shows the examples.
 \item [help.start()] opens the html documentation page.
-\end{description}
-
-
-IO:
-\begin{description}
 \item [source("a.R")] loads a script.
-\item [sink("a.lis")] redirects the output to a file, and =sink()= restore that to standard output.
-\end{description}
-
-
-Objects:
-\begin{description}
+\item [sink("a.lis")] redirects the output to a file, and =sink()=
+  restore that to standard output.
 \item [ls()] list the objects currently stored.
 \item [objects()] create and store current objects.
 \item [rm(x, y, z, ink, junk, temp, foo, bar)] remove objects
 \end{description}
 
-
 \subsection{Objects}
-Objects have mode and length.  The =typeof= gets the type of an
-object, while =mode= retrieves the mode of an object.  =length= gets
-the length of the vector.
-
-Objects have attributes.
-\begin{description}
-\item [names] is used for indexing
-\item [dim] is the dimension of a matrix
-\item [dimnames] is the character names of the dimensions
-\end{description}
-
-The missing values are =NA=, tested by =is.na=.  Illegal computations
-produces =NaN=, e.g. =0/0=.
-
-Compound objects are /factors/ (a.k.a. enumerators) and /data
-frames/ (lists of objects all have the same length).
+Objects have mode and length.
 \begin{description}
 \item [Vectors] are the array of objects of the same mode.
 \item [List] can contain the objects of different modes.
-\item [data frame] is a list with class "data.frame".
+\item [data frame] lists of objects all have the same length
+\item [factor] enumerators
+\end{description}
+
+The missing values are \texttt{NA}, tested by \texttt{is.na}.  Illegal
+computations produces \texttt{NaN}, e.g. \texttt{0/0}.
+
+\subsubsection{Get Attributes}
+\begin{description}
+\item [typeof] gets the type of an object
+\item [mode] retrieves the mode of an object.
+\item [length] get the length of vector
+\item [names] is used for indexing. Data frame has names as column
+  names. Assign a vector to the function will set the names.
+\item [dim] is the dimension of a matrix. Setting dim of a variable
+  declares a matrix. \texttt{dim(z) <- c(3,5)}.
+\item [dimnames] is the character names of the dimensions
+\item [str] show the structure of arbitrary type
+\end{description}
+
+\subsubsection{Data Frame}
+A data frame is a list of equal-length vectors.  When getting the data
+from \texttt{read.csv}, the result is a data frame.
+
+Indexing:
+
+\begin{description}
+\item [{[]}] Return data frame, retaiing names. Can use vector as index.
+\item [{[[]]}] Return the value, dropping names. Can NOT use a vector as index.
 \end{description}
 
 \subsubsection{Vector}
-Create a vector by =c=: =c(10.4, 5.6, 3.1)=.
-This connects elements /end to end/, e.g. =c(x, 0, x)=.
-By a sequence =1:30=: the same as: =c(1, 2, ..., 29, 30)=.
-Colon operator can also specify a backward sequence: =30:1=
-Colon operator has higher priority: ~2*1:15~ is the same as =c(2, 4, …, 28, 30)=
-The colon operator works, if you want a more flexible and powerful
-expression, =seq= is what you want:
 \begin{description}
-\item [seq(2,10)] produces \texttt{2:10}.
+\item [c(1,2,3)] creating a vector
+\item [1:3] same as \texttt{c(1,2,3)}
+\item [3:1] same as \texttt{c(3,2,1)}
+\item [2*1:3] same as \texttt{c(2,4,6)}, \texttt{:} has higher priority
+\item [seq(1,3)] produces \texttt{1:3}. More powerful
 \item [seq(-5, 5, by=.2)]
 \item [seq(length=51, from=-5, by=.2)]
+\item [rep(c(1,2), times=2)] \verb$[1,2,1,2]$
+\item [rep(c(1,2), each=2)] \verb$[1,1,2,2]$
 \end{description}
 
-Repeating can be done by =rep=:
-\begin{description}
-\item [x <- c(1,2,3)]
-\item [rep(x, times=5)] \verb$[1,2,3,1,2,3,...]$
-\item [rep(x, each=5)] \verb$[1,1,1,1,1,2,2,2,2,2,...]$
-\end{description}
-\subsubsection{Indexing}
-Inside =[]=, it can be a number or character, or a vector of them.
-For vectors, =[]= returns the element.  For lists, =[]= will return
-the the element inside a list, while =[[]]= will return the single
-element.  =[]= does not allow a vector as index.
-
-If the index is integer, will select based on the position, start from
-1.  If it is negative, it means the elements other than those index.
-The index 0 will return empty.  Other numeric values will be converted
-to integer towards zero.
-
-   If the index is logical vector, the true ones will be returned.
-   If the index is character, it is compared, /partially/, with the /names/ attributes of the vector.
-   \texttt{\$} can be used for indexing with character.
-   The empty index =[]= will returns the entire vector with /irrelevant/ attributes removed.
-   The only retained ones are the =names=, =dim= and =dimnames= attributes.
-\begin{lstlisting}
-fruit <- c(5, 10, 1, 20)
-names(fruit) <- c("orange", "banana", "apple", "peach")
-lunch <- fruit[c("apple","orange")]
-# matrix
-dim(z) <- c(3,5,100)~
-z[2,,]
-z[,,]
-\end{lstlisting}
-
-\subsubsection{data example}
-
-\begin{lstlisting}
-  ## (HEBI: Command line arguments)
-  args = commandArgs(trailingOnly=TRUE)
-  csvfile = args[1]
-  csv = read.csv(csvfile, header=TRUE)
-
-  total_test <- dim(csv)[[1]]
-  sub = subset(csv, reach_code>=5)
-  total_reach_poi <- dim(sub)[[1]]
-  sub = subset(csv, reach_code==5 & status_code == 1)
-  total_fail_poi <- dim(sub)[[1]]
-
-  sub <- sub[1:(length(csv)-2)]
-  ## (HEBI: callin ga function)
-  funcs = TransferFunction(sub);
-
-  ## (HEBI: define a function)
-  Constant <- function(data) {
-      ## (HEBI: return value as a vector)
-      ret <- c()
-      i <- 1
-      ## (HEBI: a for loop using the vector as range)
-      for (i in c(1:length(data))) {
-          col = data[i];
-          ## (HEBI: Get the name of a column)
-          name = names(col);
-          if (substr(name, 1, 6) == "output") {
-              ## (HEBI: remove of NA)
-              newcol = col[!is.na(col)];
-              if (length(newcol) > 2) {
-                  value <- newcol[1]
-                  ## (HEBI: check the value of the vector is all the same)
-                  if (length(newcol[newcol != value]) == 0) {
-                      ## (HEBI: pushing a new value to the return vector)
-                      ret <- c(ret, paste("name = ",  value))}}}}
-      return(ret)}
-\end{lstlisting}
-
-\subsection{Operators}
-\begin{description}
-\item [arithmetic] \texttt{+-*/}, \verb$^$ for exp, \verb$%%$ for modulus
-\item [matrix] \verb$%*%$ matrix product, \verb$%o%$ outer product
-\item [logic] \verb$!$, \verb$&, |$ for vector, \verb$&&, ||$ for no vector
-\item [relative] \verb$>, <, ==, <=, >=$
-\item [general] \verb$<-, ->$ assignments, \texttt{\$} list subset,
-  \verb$:$ sequence, \verb$~$ for model formula
-\end{description}
-
-
-Built-in functions:
-\begin{description}
-\item =log=, =exp=, =sin=, =cos=, =tan=, =sqrt=
-\item =min=, =max=
-\item =range=: same as =c(min(x),max(x))=
-\item =length(x)=, =sum(x)=, =prod(x)= (product)
-\item =mean(x)=: =sum(x)/length(x)=
-\item [var(x)] \texttt{sum((x-mean(x))\^2)/(length(x)-1)}
-\item ~sort(x)~: increasing order
-\item ~order()~ or ~sort.list()~
-\item =paste()= function takes an arbitrary number of arguments and
-  concatenates them one by one into character strings.
-\end{description}
-
-
-\subsection{Control Structure}
-The compound statements are the same as C, can be a single statement without the braces.
-\subsubsection{Conditional}
-\begin{description}
-\item [if] =if (STMT) STMT else if (STMT) STMT else STMT=
-\item [Switch] =switch (STMT, LIST)=
-  \begin{itemize}
-  \item the STMT is first evaluated
-  \item if the value is within 1 and the length of the LIST, evaluate LIST[i], and return
-  \item return NULL
-  \item Notice that the LIST can be a comma separated argument of
-    switch ... which means switch actually accepts =...=
-\end{itemize}
-\end{description}
-
-\subsubsection{Loop}
-\begin{description}
-\item [for] =for (NAME in VECTOR) STMT=
-\item [while] =while (STMT) STMT
-\item [repeat] repeat STMT
-\item [break, next]
-\end{description}
-
-\subsection{Evaluation rules}
+\subsubsection{Evaluation Rules}
 \begin{description}
 \item [recycling rules] the shortest list is recycled to the length of longest.
 \item [dimensional attributes] the dimension of matrix must match. No recycle for a matrix.
 \end{description}
 
-\subsection{Function}
-=function (ARGLIST) BODY=
 
-The argument list can be a symbol, a ~symbol=value~, or a =...=.  The
-body is a compound expression, surrounded with ={}=.  Function can be
-assigned to a symbol.
+\subsubsection{Indexing}
+\begin{description}
+\item [{[]}] empty index will returns the entire vector
+  \begin{itemize}
+  \item with \textit{irrelevant} attributes removed.
+  \item The only retained ones are the \texttt{names}, \texttt{dim}
+    and \texttt{dimnames} attributes.
+  \item Similarly the empty field in a matrix index will select the
+    whole line or column. \texttt{z[2,,]}
+  \end{itemize}
+\item [{[1]}] using number as index.
+  \begin{itemize}
+  \item Start from 1
+  \item Negative means elements other than those.
+  \item The index 0 will return empty
+  \item Other numeric values will be converted to integer towards
+    zero.
+  \end{itemize}
+\item [{[c(True, False)]}] logical vector, the true ones will be
+  returned.
+\item [{[c("name")]}] character
+  \begin{itemize}
+  \item it is compared, partially, with \texttt{names} attributes of
+    the vector
+  \item can be a number or character, or a vector of them.
+  \item \texttt{\$} can be used for indexing with character.
+  \end{itemize}
+\item [vector{[]}] return element
+\item [list{[]}] return list
+\item [list{[[]]}] return single element. Cannot use vector as index.
+\end{description}
+
+\subsection{Functions}
+Useful R functions
+\begin{description}
+\item [na.omit] can omit the NA values in data frame
+\item [commandArgs] return a list of argument. \texttt{csvfile=args[1]}
+  \begin{description}
+  \item [trailingOnly] TRUE or FALSE
+  \end{description}
+\item [subset] return a subset by some
+  criteria. \texttt{subset(csv,lastcol>=5)}. Condition can be
+  concatenated by \verb$&$ and \verb$|$
+\item [substr] \texttt{substr(name, 1, 6)=="output"}
+\item [paste] takes an arbitrary number of arguments and concatenates
+  them one by one into character strings.
+\item [read.csv] return a data frame.
+  \begin{description}
+  \item [header] TRUE or FALSE
+  \end{description}
+\item [write]
+\item [write.table]
+\item [write.csv]
+\item [read.table("filename", header=TRUE, sep=",")]
+  \begin{itemize}
+  \item this ignores blank lines,
+  \item and expect the header to be one field less than the body.
+  \item \verb$#$ as comments
+  \end{itemize}
+\end{description}
+
+\begin{tabular}{llll}
+  \verb$^$ & exp & \verb$%%$ & modulus\\
+  \verb$%*%$ & matrix product & \verb$%o%$ & outer product\\
+  \verb$!$ & negative & \verb$&,|$ & for vector\\
+  \verb$&&,||$ & for no vector & \verb$<-, ->$ & assignments\\
+  \texttt{\$} & list subset & \verb$:$ & sequence\\
+  \verb$~$ & for model formula
+\end{tabular}
+
+Mathmatic functions
+\begin{description}
+\item [log, exp]
+\item [sin,cos,tan]
+\item [sqrt]
+\item [min,max]
+\item [range] same as \texttt{c(min(x),max(x))}
+\item [sum,prod]
+\item [mean] \texttt{sum(x)/length(x)}
+\item [var(x)] \verb$sum((x-mean(x))^2)/(length(x)-1)$
+\item [sort] increasing order
+\item [order] \texttt{sort.list}
+\end{description}
+
+
+\subsection{Control Structure}
+The compound statements are the same as C, can be a single statement
+without the braces.
+
+\subsubsection{Condition}
+Condition can use \texttt{==} to check. String can also be checked
+this way. \texttt{!} can be used to negate a whole boolean
+vector. \texttt{!is.na(col)}.
+
+\subsubsection{Conditional}
+
+\begin{description}
+\item [if (\NT{stmt}) \NT{stmt} else if (\NT{stmt}) \NT{stmt} else \NT{stmt}]
+\item [switch (\NT{stmt}, \NT{list})] the \texttt{stmt} is first
+  evaluated, if the value is within \texttt{[1,length(list)]} evaluate
+  \texttt{list[i]}
+\end{description}
+
+\subsubsection{Loop}
+\begin{description}
+\item [for (\NT{name} in \NT{vector}) \NT{stmt}]
+\item [while (\NT{stmt}) \NT{stmt}]
+\item [repeat \NT{stmt}]
+\item [break, next]
+\end{description}
+
+\subsection{Function}
+\begin{description}
+\item [function (\NT{arglist}) \NT{body}] The argument list can be a
+  symbol, a \texttt{symbol=value}, or a \texttt{...}.  The body is a
+  compound expression, surrounded with \verb${}$.  Function can be
+  assigned to a symbol.
+\end{description}
 
 The matching of formals and actual are pretty tricky.
+A return can return value from a function.
 \begin{enumerate}
 \item exact matching on tags
 \item partial matching on tags
-\item positional matching for =...=
+\item positional matching for \texttt{...}
 \end{enumerate}
 Partial matching result must be unique, but the exact matched ones are
 excluded before this step is entered.
@@ -281,21 +248,9 @@ Each time that function is called, you enter the debug and can control the execu
 Tracing can be registered by =trace= or =untrace= with the name of the function.
 It might need to be quoted in some case, so you'd better quote it, with double quotes.
 Every time the function is invoked, the return value will be printed as trace.
-\subsection{Data IO}
-\begin{description}
-\item [write]
-\item [write.table]
-\item [write.csv]
-\item [read.table("filename", header=TRUE, sep=",")]
-  \begin{itemize}
-  \item this ignores blank lines,
-  \item and expect the header to be one field less than the body.
-  \item \verb$#$ as comments
-  \end{itemize}
-\end{description}
 
 \subsection{Models}
-  Linear model.
+Linear model.
 
 \begin{lstlisting}
 fm = lm(y ~ x1 + x2, data = mydataframe)
@@ -321,6 +276,55 @@ fs <- update(fs, . ~ . + x3)
 fs <- update(fs, sqrt(.) ~ .)
 \end{lstlisting}
 
+\subsection{SVM}
+\begin{lstlisting}
+#!/usr/bin/env Rscript
+
+
+# load the 1071 library containing vm
+library("e1071")
+
+# preview the data set
+head(iris, 5)
+attach(iris)
+x <- subset(iris, select=-Species)
+y <- Species
+
+# using svm to get the model
+svm_model <- svm(Species ~ ., data=iris)
+summary(svm_model)
+
+# another way to get the model
+svm_model1 <- svm(x,y)
+summary(svm_model1)
+
+# predict using the same data
+pred <- predict(svm_model1,x)
+system.time(pred <- predict(svm_model1,x))
+
+# table will give the precision and recall
+table(pred,y)
+
+error <- y - pred
+svrPredictionRMSE <- rmse(error)
+
+# using the "tune" function to automatic select the best using cross validation
+svm_tune <- tune(svm, train.x=x, train.y=y, 
+              kernel="radial", ranges=list(cost=10^(-1:2), gamma=c(.5,1,2)))
+print(svm_tune)
+
+## use the cost and gamma parameter got from tune,
+## re-generate the model
+svm_model_after_tune <-
+    svm(Species ~ ., data=iris, kernel="radial", cost=1, gamma=0.5)
+summary(svm_model_after_tune)
+
+# re-run the prediction
+pred <- predict(svm_model_after_tune,x)
+system.time(predict(svm_model_after_tune,x))
+# see the result
+table(pred,y)
+\end{lstlisting}
 
 \subsection{Packages}
 \subsubsection{ggplot2}

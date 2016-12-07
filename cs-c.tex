@@ -1,0 +1,517 @@
+\section{C}
+
+\subsection{Type}
+\begin{itemize}
+\item When using \texttt{char}, specify whether you want to use
+  \texttt{unsigned char} or \texttt{signed char}, otherwise the system
+  will choose one.
+\item \texttt{long long} >= \texttt{long} >= \texttt{int} >=
+  \texttt{short}. So when choosing, always use \texttt{int} and
+  \texttt{long long}
+\item use \texttt{double} instead of \texttt{float}
+\end{itemize}
+
+\subsubsection{Static}
+\begin{description}
+\item [static member function] can use ~ClassName::function()~ directly
+\item [static member variable] only one object for all instance of the
+  class
+\item [static variable] A static variable inside a function keeps its
+  value between invocations.  A static global variable or a function
+  is "seen" only in the file it's declared in
+\item [static functions] Static functions are not visible outside of
+  the C file they are defined in.
+\end{description}
+
+\begin{itemize}
+\item outside any function, a variable of system type will be initialized to 0 if
+\item inside a function, a variable of system type will \textit{not} be initialized.
+\item string will be init to empty
+\item \texttt{extern int i;} is declaration
+\item \texttt{extern int i=1;} is definition, and cannot be inside a function
+\end{itemize}
+
+\subsection{Language Specification}
+\subsubsection{variadic functions}
+a function to take a variable number or type of arguments
+
+Receiving of arguments:
+You actually need both the number and type of the arguments to retrieve.
+
+\begin{enumerate}
+\item create \verb$va_list$
+\item initialize using \verb$va_start$
+\item access using multiple \verb$va_arg$. The first gives you the first arg, and so on.
+\item call \verb$va_end$
+\end{enumerate}
+
+The macro prototypes (defined in =stdarg.h=). Note these are macros,
+not functions.
+\begin{lstlisting}
+void va_start (va_list ap, last-required)
+type va_arg (va_list ap, type)
+void va_end (va_list ap)
+\end{lstlisting}
+
+
+An real world example:
+\begin{lstlisting}
+  #include <stdarg.h>
+  #include <stdio.h>
+
+  int
+  add_em_up (int count,...)
+  {
+    va_list ap;
+    int i, sum;
+    va_start (ap, count);         /* Initialize the argument list. */
+    sum = 0;
+    for (i = 0; i < count; i++)
+      sum += va_arg (ap, int);    /* Get the next argument value. */
+    va_end (ap);                  /* Clean up. */
+    return sum;
+  }
+  int
+  main (void)
+  {
+    /* This call prints 16. */
+    printf ("%d\n", add_em_up (3, 5, 5, 6));
+    /* This call prints 55. */
+    printf ("%d\n", add_em_up (10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+    return 0;
+  }
+\end{lstlisting}
+
+\subsubsection{Variadic Macros}
+\begin{lstlisting}
+#define eprintf(format, ...) fprintf (stderr, format, __VA_ARGS__)
+\end{lstlisting}
+
+The \verb$VA_ARGS$ will be replaced with whatever in \verb$...$.
+The variable argument is completely macro-expanded before it is inserted into the macro expansion,
+just like an ordinary argument.
+
+\subsection{idioms}
+\begin{lstlisting}
+typedef enum { false, true } bool;
+\end{lstlisting}
+
+\subsection{Cast}
+
+\subsubsection{In a word}
+\begin{description}
+\item [static\_cast] ordinary type conversions.
+\item [dynamic\_cast] converting pointers/references within an
+  inheritance hierarchy.
+\item [reinterpret\_cast] low-level reinterpreting of bit patterns.
+  Use with extreme caution.
+\item [const\_cast] casting away const/volatile.  Avoid this unless you
+  are stuck using a const-incorrect API.
+\end{description}
+
+\subsubsection{C style cast}
+DO NOT USE
+
+\subsubsection{Static Cast}
+\verb$static_cast$ is the first cast you should attempt to use.  It does
+things like implicit conversions between types (such as =int= to
+=float=, or pointer to =void*=), and it can also call explicit
+conversion functions (or implicit ones).  In many cases, explicitly
+stating \verb$static_cast$ isn't necessary, but it's important to note that
+the ~T(something)~ syntax is equivalent to ~(T)something~ and should
+be avoided (more on that later).  A \verb$T(something, something_else)$ is
+safe, however, and guaranteed to call the constructor.
+
+\verb$static_cast$ can also cast through inheritance hierarchies.  It is
+unnecessary when casting upwards (towards a base class), but when
+casting downwards it can be used as long as it doesn't cast through
+virtual inheritance.  It does not do checking, however, and it is
+undefined behavior to \verb$static_cast$ down a hierarchy to a type that
+isn't actually the type of the object.
+
+\subsubsection{Const Cast}
+
+\verb$const_cast$ can be used to remove or add const to a variable; no
+other C++ cast is capable of removing it (not even
+\verb$reinterpret_cast$).  It is important to note that modifying a
+formerly const value is only undefined if the original variable is
+const; if you use it to take the const off a reference to something
+that wasn't declared with const, it is safe.  This can be useful when
+overloading member functions based on const, for instance.  It can
+also be used to add const to an object, such as to call a member
+function overload.
+
+\verb$const_cast$ also works similarly on volatile, though that's less
+common.
+
+\subsubsection{Dynamic Cast}
+
+\verb$dynamic_cast$ is almost exclusively used for handling polymorphism.
+You can cast a pointer or reference to any polymorphic type to any
+other class type (a polymorphic type has at least one virtual
+function, declared or inherited).  You can use it for more than just
+casting downwards -- you can cast sideways or even up another chain.
+The \verb$dynamic_cast$ will seek out the desired object and return it if
+possible.  If it can't, it will return NULL in the case of a pointer,
+or throw \verb$std::bad_cast$ in the case of a reference.
+
+\verb$dynamic_cast$ has some limitations, though.  It doesn't work if there
+are multiple objects of the same type in the inheritance hierarchy
+(the so-called 'dreaded diamond') and you aren't using virtual
+inheritance.  It also can only go through public inheritance - it will
+always fail to travel through protected or private inheritance.  This
+is rarely an issue, however, as such forms of inheritance are rare.
+
+\subsubsection{Reinterpret Cast}
+\verb$reinterpret_cast$ is the most dangerous cast, and should be used very
+sparingly.  It turns one type directly into another - such as casting
+the value from one pointer to another, or storing a pointer in an int,
+or all sorts of other nasty things.  Largely, the only guarantee you
+get with \verb$reinterpret_cast$ is that normally if you cast the result
+back to the original type, you will get the exact same value (but not
+if the intermediate type is smaller than the original type).  There
+are a number of conversions that \verb$reinterpret_cast$ cannot do, too.
+It's used primarily for particularly weird conversions and bit
+manipulations, like turning a raw data stream into actual data, or
+storing data in the low bits of an aligned pointer.
+
+\subsubsection{C style cast}
+
+C casts are casts using (type)object or type(object).
+A C-style cast is defined as the first of the following which succeeds:
+\begin{description}
+\item [const\_cast]
+\item [static\_cast] (though ignoring access restrictions)
+\item [static\_cast] (see above), then \verb$const_cast$
+\item [reinterpret\_cast] \verb$reinterpret_cast$, then \verb$const_cast$
+\end{description}
+
+It can therefore be used as a replacement for other casts in some
+instances, but can be extremely dangerous because of the ability to
+devolve into a \verb$reinterpret_cast$, and the latter should be preferred
+when explicit casting is needed, unless you are sure \verb$static_cast$
+will succeed or \verb$reinterpret_cast$ will fail.  Even then, consider the
+longer, more explicit option.
+
+C-style casts also ignore access control when performing a
+\verb$static_cast$, which means that they have the ability to perform an
+operation that no other cast can.  This is mostly a kludge, though,
+and in my mind is just another reason to avoid C-style casts.
+
+\subsection{Compound Literals}
+
+A compound literal looks like a cast containing an initializer.  Its
+value is an object of the type specified in the cast, containing the
+elements specified in the initializer; it is an lvalue.
+
+Example
+
+\begin{lstlisting}
+  struct foo {int a; char b[2];} structure;
+  // The constructing:
+  structure = ((struct foo) {x + y, 'a', 0});
+  char **foo = (char *[]) { "x", "y", "z" };
+\end{lstlisting}
+
+static Value in the compound literals must be constant.
+
+\begin{lstlisting}
+static struct foo x = (struct foo) {1, 'a', 'b'};
+static int y[] = (int []) {1, 2, 3};
+static int z[] = (int [3]) {1};
+\end{lstlisting}
+
+\subsection{extern}
+\begin{itemize}
+\item extern means extend the visibility of a variable or function.
+\item Declaration can be many times, but definition can only appear once.
+\item Definition will allocate memory, but declaration will never allocate memory.
+\end{itemize}
+
+\subsubsection{Function}
+
+For function declare and define, `extern` is added by compiler by
+default.  So use or not use `extern` for functions are equivalent.
+
+\subsubsection{Variable}
+
+define a variable
+
+\begin{lstlisting}
+int a;
+\end{lstlisting}
+
+declare a variable
+
+\begin{lstlisting}
+extern int a;
+\end{lstlisting}
+
+This can be used so that in this file, a refer to the variable
+actually defined and allocated in another file.  The definition of the
+variable in the other file does not have extern, but it is still
+available by this file ...
+
+An exception: extern a variable with initialization
+
+\begin{lstlisting}
+extern int a = 8;
+\end{lstlisting}
+
+This will be treated as definition.
+
+\subsubsection{extern "C"}
+\begin{quote}
+extern "C" makes a function-name in C++ have 'C' linkage
+(compiler does not mangle the name)
+so that client C code can link to (i.e use) your function
+using a 'C' compatible header file
+that contains just the declaration of your function.
+\end{quote}
+
+\begin{enumerate}
+\item Since C++ has overloading of function names and C does not
+\item C++ compiler cannot just use the function name as a unique id to link to, so it mangles the name by adding information about the arguments
+\item A C compiler does not need to mangle the name since you can not overload function names in C
+\end{enumerate}
+
+When you state that a function has extern "C" linkage in C++,
+the C++ compiler does not add argument/parameter type information
+to the name used for linkage.
+
+syntax
+\begin{itemize}
+\item can specify "C" linkage to each individual declaration/definition explicitly
+\item use a block to group a sequence of declarations/definitions to have a certain linkage:
+\end{itemize}
+\begin{lstlisting}
+extern "C" void foo(int);
+extern "C"
+{
+   void g(char);
+   int i;
+}
+\end{lstlisting}
+
+
+\subsection{restrict}
+The restrict keyword is a declaration of intent given by the programmer to the compiler.
+
+It says that for the lifetime of the pointer,
+only it or a value directly derived from it (such as pointer + 1)
+will be used to access the object to which it points.
+
+This limits the effects of pointer aliasing, aiding optimizations.
+
+If the declaration of intent is not followed
+and the object is accessed by an independent pointer,
+this will result in undefined behavior.
+
+
+
+\subsection{volatile}
+When your code works without compiler optimization, but fails when you turn optimization on,
+perhaps it is because of `volatile`.
+
+If compiler found that around a variable, no one change it, it will do some optimization based on this.
+Maybe remove unnecessary code which it thinks will never execute.
+
+The keyword tells the compiler that the value of the variable may change at any time.
+It may change unexpectedly,
+so DO NOT optimize the code when you compiler think it would not change.
+
+\subsubsection{syntax}
+
+declare a variable(both are equalvalent)
+
+\begin{lstlisting}
+volatile int foo;
+int volatile foo;
+\end{lstlisting}
+
+declare pointers to volatile varialbes(common usage)
+
+\begin{lstlisting}
+volatile uint8_t *pReg;
+uint8_t volatile *pReg;
+\end{lstlisting}
+
+volatile pointers to non-volatile data(very rare)
+
+\begin{lstlisting}
+int * volatile p;
+\end{lstlisting}
+
+volatile pointer to volatile variable(also rare)
+
+\begin{lstlisting}
+int volatile * volatile p;
+\end{lstlisting}
+
+\subsubsection{When to use it}
+
+\paragraph{Memory-mapped peripheral registers}
+The register's value may change by hardware.  But in the code,
+compiler cannot see it, so it may assume it is constant, and do some
+optimization.
+
+\begin{lstlisting}
+uint8_t *pReg = (uint8_t) 0x1234;
+while (*pReg==0) {}
+\end{lstlisting}
+
+Since no `volatile`, the assembly looks like:
+
+\begin{lstlisting}
+  mov ptr, #0x1234
+  mov a, @ptr
+loop:
+  bz loop
+\end{lstlisting}
+
+To fix it, use volatile to declare it:
+
+\begin{lstlisting}
+uint8_t volatile *pReg = (uint8_t volatile *)0x1234
+\end{lstlisting}
+
+The assembly will be:
+
+\begin{lstlisting}
+  mov ptr, #0x1234
+loop:
+  mov a, @ptr
+  bz loop
+\end{lstlisting}
+\paragraph{Global variables modified by an ISR(Interrupt Service Routine)}
+Compiler will of course not know about interrupt.
+So when the global file can be modified by interrupt,
+we must tell it.
+
+\begin{lstlisting}
+int volatile etx_rcvd = FALSE;
+void main() {
+  while(!ext_rcvd) {}
+}
+interrupt void rx_isr(void) {
+  if (ETX == rx_char) {
+    etx_rcvd = TRUE;
+  }
+}
+\end{lstlisting}
+
+If no volatile, compiler will think the while condition always be true,
+thus never go out of the loop.
+
+\paragraph{Global variables accessed by multiple tasks within a multi-threaded application}
+Compiler doesn't find the variable change near the code it is defined,
+so it may assume it is unchanged.
+While another task in the same time may change it,
+it is just like the interrupt.
+
+\subsection{Operator Precedence}
+
+\begin{table}[ht]
+  \centering
+  \tiny
+  \begin{tabular}{r|l|l|l}
+    Pred & Operator & Description & Assoc\\
+    \hline
+    0 & \textbf{\textbf{::}} & scope resolution & L to R\\
+    \hline
+    1 & ++ -- & Suffix increment and decrement & \\
+               & () & Function call & \\
+               & [] & Array subscripting & \\
+               & . & Structure and union member access & \\
+               & -> & Struct/union member access through pointer & \\
+               & (type)\{list\} & Compound literal(C99) & \\
+    \hline
+    2 & ++ -- & Prefix increment and decrement & R to L\\
+               & + - & Unary plus and minus & \\
+               & ! \textasciitilde{} & Logical NOT and bitwise NOT & \\
+               & (type) & Type cast & \\
+               & * & dereference & \\
+               & \& & Address-of & \\
+               & sizeof &  & \\
+               & \_Alignof & Alignment requirement(C11) & \\
+               & \textbf{\textbf{new, new[]}} & Dynamic memory allocation & \\
+               & \textbf{\textbf{delete, delete[]}} & Dynamic memory deallocation & \\
+    \hline
+    3 & * / \% &  & L to R\\
+    4 & + - & Addition and subtraction & \\
+    5 & << >> & Bitwise left shift and right shift & \\
+    6 & < <= & Compare & \\
+               & > >= &  & \\
+    7 & \texttt{= !} &  & \\
+    8 & \& & Bitwise AND & \\
+    9 & \^{} & Bitwise XOR (exclusive or) & \\
+    10 & l & Bitwise OR (inclusive or) & \\
+    11 & \&\& & Logical AND & \\
+    12 & ll & Logical OR & \\
+    13 & ?: & Ternary conditional & R to L\\
+    \hline
+    14 & \textbf{\textbf{throw}} &  & \\
+               & = &  & \\
+               & += -= &  & \\
+               & *= /= \%= &  & \\
+               & <<= >>= & Assignment by bitwise left shift and right shift & \\
+               & \&= \^{}= l= & Assignment by bitwise AND, XOR, and OR & \\
+    \hline
+    15 & , & Comma & L to R\\
+  \end{tabular}
+  \caption{Precedence}
+\end{table}
+
+\subsubsection{notes}
+\begin{itemize}
+\item for \texttt{?:}: the middle of the conditional operator (between ? and :) is
+  parsed as if parenthesized: its precedence relative to =?:= is
+  ignored
+\item For C++: The operand of sizeof can't be a C-style type cast:
+ the expression =sizeof (int) * p= is unambiguously interpreted as =(sizeof(int)) * p=,
+ but not =sizeof((int)*p)=.
+\item In c++ table, the =?:= is also in 14 cell
+\end{itemize}
+
+\subsection{Unix Library}
+sleep
+\begin{lstlisting}
+#include <unistd.h>
+unsigned int sleep(unsigned int seconds); // seconds
+int usleep(useconds_t useconds); // microseconds
+int nanosleep(const struct timespec *rqtp, struct timespec *rmtp);
+\end{lstlisting}
+
+There's no implementation of \verb$clock_gettime$ as in Unix, the following serves as an portable solution.
+\begin{lstlisting}
+#ifdef __MACH__
+#include <sys/time.h>
+#define CLOCK_REALTIME 0
+#define CLOCK_MONOTONIC 0
+//clock_gettime is not implemented on OSX
+int clock_gettime(int /*clk_id*/, struct timespec* t) {
+    struct timeval now;
+    int rv = gettimeofday(&now, NULL);
+    if (rv) return rv;
+    t->tv_sec  = now.tv_sec;
+    t->tv_nsec = now.tv_usec * 1000;
+    return 0;
+}
+#endif
+\end{lstlisting}
+
+use it like this
+\begin{lstlisting}
+double get_time() {
+  struct timespec ts;
+  ts.tv_sec=0;
+  ts.tv_nsec=0;
+  clock_gettime(CLOCK_REALTIME, &ts);
+  double d = (double)ts.tv_sec + 1.0e-9*ts.tv_nsec;
+  return d;
+}
+\end{lstlisting}
+
+%%% Local Variables:
+%%% TeX-master: "cheatsheet"
+%%% End:
